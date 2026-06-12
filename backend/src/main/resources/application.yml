@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: hrms-backend
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/hrms?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: hrms_user
+    password: hrms_password
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    enabled: true
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: samarth.dibd@gmail.com
+    password: ybyl-tixd-rhfz-ucbd
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          ssl:
+            trust: smtp.gmail.com
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+
+server:
+  port: 8080
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+app:
+  security:
+    jwt-secret: replace-this-with-a-long-random-secret
+    access-token-minutes: 30
+  frontend-url: http://localhost:3000
+  mock-mail: false
