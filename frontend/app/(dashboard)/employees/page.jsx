@@ -427,7 +427,7 @@ export default function EmployeesPage() {
                       <Button
                         type="button"
                         onClick={() => setIsDrawerOpen(false)}
-                        className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-red shadow-sm hover:bg-slate-50"
+                        className="rounded-md border border-slate-300 bg-[#bd0d00] px-4 py-2 text-sm font-medium text-red shadow-sm hover:bg-[#cf4238]"
                       >
                         Cancel
                       </Button>
