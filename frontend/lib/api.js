@@ -21,7 +21,9 @@ export async function apiFetch(path, init) {
     ...init?.headers,
   };
 
-  if (authHeader) {
+  // Only inject the stored session header if the caller has NOT explicitly
+  // provided their own Authorization header (e.g. during login).
+  if (authHeader && !headers["Authorization"]) {
     headers["Authorization"] = authHeader;
   }
 
