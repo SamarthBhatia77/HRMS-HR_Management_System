@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LeaveStatusBadge } from "@/components/employee/leave-status-badge";
+import { apiFetch } from "@/lib/api";
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const LEAVE_TYPES = [
@@ -11,39 +12,6 @@ const LEAVE_TYPES = [
   { value: "Maternity / Paternity Leave", icon: "👶" },
   { value: "Compensatory Off",           icon: "🔄" },
   { value: "Unpaid Leave",               icon: "📋" },
-];
-
-const INITIAL_LEAVES = [
-  {
-    id: 1,
-    type: "Annual Leave",
-    startDate: "2026-05-12",
-    endDate: "2026-05-14",
-    days: 3,
-    reason: "Family vacation trip to the hills.",
-    status: "APPROVED",
-    appliedOn: "2026-05-05",
-  },
-  {
-    id: 2,
-    type: "Sick Leave",
-    startDate: "2026-04-03",
-    endDate: "2026-04-03",
-    days: 1,
-    reason: "High fever and cold.",
-    status: "APPROVED",
-    appliedOn: "2026-04-03",
-  },
-  {
-    id: 3,
-    type: "Casual Leave",
-    startDate: "2026-06-20",
-    endDate: "2026-06-21",
-    days: 2,
-    reason: "Personal errand and bank work.",
-    status: "PENDING",
-    appliedOn: "2026-06-10",
-  },
 ];
 
 /* ─── Helpers ───────────────────────────────────────────────── */
@@ -68,7 +36,8 @@ const today = new Date().toISOString().slice(0, 10);
 
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function EmployeeLeavesPage() {
-  const [leaves, setLeaves] = useState(INITIAL_LEAVES);
+  const [leaves, setLeaves] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   // Form state
@@ -82,10 +51,32 @@ export default function EmployeeLeavesPage() {
 
   const leavesUsed = leaves
     .filter((l) => l.status === "APPROVED")
-    .reduce((s, l) => s + l.days, 0);
+    .reduce((s, l) => s + daysBetween(l.startDate, l.endDate), 0);
   const pendingCount = leaves.filter((l) => l.status === "PENDING").length;
   const leavesLeft = 21 - leavesUsed;
   const duration = daysBetween(startDate, endDate);
+
+  async function loadLeaves() {
+    try {
+      const response = await apiFetch("/leaves");
+      if (response.success && response.data) {
+        const mapped = response.data.map(item => ({
+          ...item,
+          type: item.leaveType,
+          days: daysBetween(item.startDate, item.endDate),
+        }));
+        setLeaves(mapped);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadLeaves();
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -98,27 +89,31 @@ export default function EmployeeLeavesPage() {
     if (!reason.trim())  { setFormError("Please enter a reason for your leave."); return; }
 
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 900));
+    try {
+      const response = await apiFetch("/leaves", {
+        method: "POST",
+        body: JSON.stringify({
+          leaveType,
+          startDate,
+          endDate,
+          reason: reason.trim(),
+        }),
+      });
 
-    setLeaves((prev) => [
-      {
-        id: Date.now(),
-        type: leaveType,
-        startDate,
-        endDate,
-        days: duration,
-        reason: reason.trim(),
-        status: "PENDING",
-        appliedOn: today,
-      },
-      ...prev,
-    ]);
-
-    setSuccessMsg("Leave request submitted! Your manager and HR have been notified.");
-    setLeaveType(""); setStartDate(""); setEndDate(""); setReason("");
-    setSubmitting(false);
-    setShowForm(false);
-    setTimeout(() => setSuccessMsg(""), 5000);
+      if (response.success) {
+        setSuccessMsg("Leave request submitted! Your manager and HR have been notified.");
+        setLeaveType(""); setStartDate(""); setEndDate(""); setReason("");
+        setShowForm(false);
+        loadLeaves();
+      } else {
+        setFormError(response.message || "Failed to submit leave request.");
+      }
+    } catch (err) {
+      setFormError(err.message || "An error occurred.");
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccessMsg(""), 5000);
+    }
   }
 
   return (

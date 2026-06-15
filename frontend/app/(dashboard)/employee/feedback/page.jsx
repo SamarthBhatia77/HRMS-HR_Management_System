@@ -1,7 +1,7 @@
 "use client";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { StarRating } from "@/components/employee/star-rating";
+import { apiFetch } from "@/lib/api";
 
 /* ─── Constants ─────────────────────────────────────────────── */
 const CATEGORIES = [
@@ -11,19 +11,6 @@ const CATEGORIES = [
   { value: "PROCESS",     label: "Processes & Tools",  icon: "⚙️" },
   { value: "GROWTH",      label: "Growth & Learning",  icon: "📈" },
   { value: "OTHER",       label: "Other",              icon: "💬" },
-];
-
-const INITIAL_FEEDBACK = [
-  {
-    id: 1,
-    category: "WORK_ENV",
-    title: "Great team collaboration",
-    details:
-      "The team has been very supportive and collaborative throughout the project. I genuinely enjoy coming to work every day. The open-door policy makes it easy to raise concerns.",
-    rating: 5,
-    anonymous: false,
-    submittedOn: "2026-05-20",
-  },
 ];
 
 /* ─── Helpers ───────────────────────────────────────────────── */
@@ -41,7 +28,8 @@ function getCat(value) {
 
 /* ─── Page ──────────────────────────────────────────────────── */
 export default function EmployeeFeedbackPage() {
-  const [feedbackList, setFeedbackList] = useState(INITIAL_FEEDBACK);
+  const [feedbackList, setFeedbackList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Form state
   const [category, setCategory] = useState("");
@@ -56,6 +44,23 @@ export default function EmployeeFeedbackPage() {
   const charCount = details.length;
   const MAX_CHARS = 1000;
 
+  async function loadFeedback() {
+    try {
+      const response = await apiFetch("/feedback");
+      if (response.success && response.data) {
+        setFeedbackList(response.data);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadFeedback();
+  }, []);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setFormError("");
@@ -67,29 +72,35 @@ export default function EmployeeFeedbackPage() {
     if (charCount > MAX_CHARS) { setFormError(`Details must be under ${MAX_CHARS} characters.`); return; }
 
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1000));
+    try {
+      const response = await apiFetch("/feedback", {
+        method: "POST",
+        body: JSON.stringify({
+          category,
+          title: title.trim(),
+          details: details.trim(),
+          rating,
+          anonymous,
+        }),
+      });
 
-    setFeedbackList((prev) => [
-      {
-        id: Date.now(),
-        category,
-        title: title.trim(),
-        details: details.trim(),
-        rating,
-        anonymous,
-        submittedOn: new Date().toISOString().slice(0, 10),
-      },
-      ...prev,
-    ]);
-
-    setSuccessMsg(
-      anonymous
-        ? "Feedback sent anonymously to your manager and HR Admin. Thank you!"
-        : "Feedback sent to your manager and HR Admin. Thank you for sharing!"
-    );
-    setCategory(""); setRating(0); setTitle(""); setDetails(""); setAnonymous(false);
-    setSubmitting(false);
-    setTimeout(() => setSuccessMsg(""), 5000);
+      if (response.success) {
+        setSuccessMsg(
+          anonymous
+            ? "Feedback sent anonymously to your manager and HR Admin. Thank you!"
+            : "Feedback sent to your manager and HR Admin. Thank you for sharing!"
+        );
+        setCategory(""); setRating(0); setTitle(""); setDetails(""); setAnonymous(false);
+        loadFeedback();
+      } else {
+        setFormError(response.message || "Failed to submit feedback.");
+      }
+    } catch (err) {
+      setFormError(err.message || "An error occurred.");
+    } finally {
+      setSubmitting(false);
+      setTimeout(() => setSuccessMsg(""), 5000);
+    }
   }
 
   return (

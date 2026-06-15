@@ -118,6 +118,18 @@ public class EmployeeService {
         return employeeRepository.findAllWithUserAndManager();
     }
 
+    public List<Employee> getTeamEmployees(String managerUserId) {
+        Employee manager = employeeRepository.findByUserId(managerUserId)
+                .orElseThrow(() -> new IllegalArgumentException("Manager profile not found for user: " + managerUserId));
+        return employeeRepository.findByManagerId(manager.getId());
+    }
+
+    public List<Employee> getTeamEmployeesByEmail(String email) {
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+        return getTeamEmployees(user.getId());
+    }
+
     public List<Employee> getManagerCandidates() {
         // Find managers by role or simply list all employees since any can potentially manager
         return employeeRepository.findAll();

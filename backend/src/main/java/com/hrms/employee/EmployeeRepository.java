@@ -12,4 +12,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, String> {
 
     @org.springframework.data.jpa.repository.Query("SELECT e FROM Employee e LEFT JOIN FETCH e.user LEFT JOIN FETCH e.manager")
     List<Employee> findAllWithUserAndManager();
+
+    @org.springframework.data.jpa.repository.Query("SELECT e FROM Employee e JOIN FETCH e.user u WHERE u.role = com.hrms.security.Role.HR_ADMIN")
+    List<Employee> findHrAdmins();
 }

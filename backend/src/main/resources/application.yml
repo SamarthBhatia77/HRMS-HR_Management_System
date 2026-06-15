@@ -45,4 +45,4 @@ app:
     jwt-secret: replace-this-with-a-long-random-secret
     access-token-minutes: 30
   frontend-url: http://localhost:3000
-  mock-mail: false
+  mock-mail: true

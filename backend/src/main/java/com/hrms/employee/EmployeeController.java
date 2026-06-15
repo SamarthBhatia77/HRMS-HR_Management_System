@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +68,17 @@ public class EmployeeController {
                 ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.ok("Manager candidates fetched successfully", list));
+    }
+
+    @GetMapping("/team")
+    public ResponseEntity<ApiResponse<List<EmployeeResponseDto>>> getMyTeam(Principal principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+        List<EmployeeResponseDto> list = employeeService.getTeamEmployeesByEmail(principal.getName()).stream()
+                .map(this::mapToResponseDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(ApiResponse.ok("Team fetched successfully", list));
     }
 
     private EmployeeResponseDto mapToResponseDto(Employee emp) {
