@@ -39,6 +39,9 @@ public class LeaveRequest {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
 
+    @Column(name = "manager_remarks")
+    private String managerRemarks;
+
     @PrePersist
     protected void onCreate() {
         if (id == null) {
@@ -134,5 +137,13 @@ public class LeaveRequest {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getManagerRemarks() {
+        return managerRemarks;
+    }
+
+    public void setManagerRemarks(String managerRemarks) {
+        this.managerRemarks = managerRemarks;
     }
 }

@@ -359,8 +359,13 @@ export default function EmployeeLeavesPage() {
                       <td className="px-5 py-4 text-slate-600">
                         {leave.days}d
                       </td>
-                      <td className="px-5 py-4 text-slate-500 max-w-[200px] truncate">
-                        {leave.reason}
+                      <td className="px-5 py-4 text-slate-500 max-w-[200px]">
+                        <div className="truncate" title={leave.reason}>{leave.reason}</div>
+                        {leave.managerRemarks && (
+                          <div className="text-[11px] text-violet-650 mt-1 font-medium italic" title={leave.managerRemarks}>
+                            Remarks: "{leave.managerRemarks}"
+                          </div>
+                        )}
                       </td>
                       <td className="px-5 py-4 text-xs text-slate-400 whitespace-nowrap">
                         {fmtDate(leave.appliedOn)}

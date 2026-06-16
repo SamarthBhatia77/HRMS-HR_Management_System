@@ -44,7 +44,8 @@ public class LeaveRequestController {
             LocalDate endDate,
             String reason,
             String status,
-            String appliedOn
+            String appliedOn,
+            String managerRemarks
     ) {}
 
     public record ApplyLeaveDto(
@@ -52,6 +53,10 @@ public class LeaveRequestController {
             LocalDate startDate,
             LocalDate endDate,
             String reason
+    ) {}
+
+    public record ReviewLeaveDto(
+            String remarks
     ) {}
 
     @PostMapping
@@ -130,7 +135,10 @@ public class LeaveRequestController {
 
     @PostMapping("/{id}/approve")
     @Transactional
-    public ResponseEntity<ApiResponse<LeaveRequestDto>> approveLeave(Principal principal, @PathVariable String id) {
+    public ResponseEntity<ApiResponse<LeaveRequestDto>> approveLeave(
+            Principal principal,
+            @PathVariable String id,
+            @RequestBody(required = false) ReviewLeaveDto dto) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -147,13 +155,19 @@ public class LeaveRequestController {
             return ResponseEntity.status(403).body(new ApiResponse<>(false, "You are not authorized to approve this leave request", null, java.time.Instant.now()));
         }
 
+        String remarks = (dto != null) ? dto.remarks() : null;
+        leaveRequest.setManagerRemarks(remarks);
         leaveRequest.setStatus("APPROVED");
         leaveRequest = leaveRequestRepository.save(leaveRequest);
 
         // Notify employee
+        String message = String.format("Your leave request for %s to %s has been APPROVED", leaveRequest.getStartDate(), leaveRequest.getEndDate());
+        if (remarks != null && !remarks.trim().isEmpty()) {
+            message += ". Remarks: " + remarks;
+        }
         Notification notification = new Notification(
                 leaveRequest.getEmployee(),
-                String.format("Your leave request for %s to %s has been APPROVED", leaveRequest.getStartDate(), leaveRequest.getEndDate()),
+                message,
                 "LEAVE_REQUEST",
                 leaveRequest.getId()
         );
@@ -164,7 +178,10 @@ public class LeaveRequestController {
 
     @PostMapping("/{id}/reject")
     @Transactional
-    public ResponseEntity<ApiResponse<LeaveRequestDto>> rejectLeave(Principal principal, @PathVariable String id) {
+    public ResponseEntity<ApiResponse<LeaveRequestDto>> rejectLeave(
+            Principal principal,
+            @PathVariable String id,
+            @RequestBody(required = false) ReviewLeaveDto dto) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
@@ -181,13 +198,19 @@ public class LeaveRequestController {
             return ResponseEntity.status(403).body(new ApiResponse<>(false, "You are not authorized to reject this leave request", null, java.time.Instant.now()));
         }
 
+        String remarks = (dto != null) ? dto.remarks() : null;
+        leaveRequest.setManagerRemarks(remarks);
         leaveRequest.setStatus("REJECTED");
         leaveRequest = leaveRequestRepository.save(leaveRequest);
 
         // Notify employee
+        String message = String.format("Your leave request for %s to %s has been REJECTED", leaveRequest.getStartDate(), leaveRequest.getEndDate());
+        if (remarks != null && !remarks.trim().isEmpty()) {
+            message += ". Remarks: " + remarks;
+        }
         Notification notification = new Notification(
                 leaveRequest.getEmployee(),
-                String.format("Your leave request for %s to %s has been REJECTED", leaveRequest.getStartDate(), leaveRequest.getEndDate()),
+                message,
                 "LEAVE_REQUEST",
                 leaveRequest.getId()
         );
@@ -206,7 +229,8 @@ public class LeaveRequestController {
                 lr.getEndDate(),
                 lr.getReason(),
                 lr.getStatus(),
-                lr.getCreatedAt().toString().split("T")[0]
+                lr.getCreatedAt().toString().split("T")[0],
+                lr.getManagerRemarks()
         );
     }
 }

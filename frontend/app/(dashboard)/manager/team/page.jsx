@@ -37,6 +37,8 @@ function AttendanceBadge({ pct }) {
 
 /* ─── Employee Drawer ─────────────────────────────────────────── */
 function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft, attendancePct, onLeave }) {
+  const [remarks, setRemarks] = useState({});
+
   if (!emp) return null;
   return (
     <div className="fixed inset-0 z-50 flex" aria-modal="true">
@@ -94,23 +96,37 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
                           {" · "}{leave.days}d
                         </p>
                         <p className="text-xs text-slate-400 mt-1 italic">"{leave.reason}"</p>
+                        {leave.managerRemarks && (
+                          <p className="text-xs text-violet-750 mt-1.5 font-medium">
+                            Remarks: <span className="italic">"{leave.managerRemarks}"</span>
+                          </p>
+                        )}
                       </div>
                       <LeaveStatusBadge status={leave.status} />
                     </div>
                     {leave.status === "PENDING" && (
-                      <div className="flex gap-2 pt-1">
-                        <button
-                          onClick={() => onApprove(emp.id, leave.id)}
-                          className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
-                        >
-                          ✓ Approve
-                        </button>
-                        <button
-                          onClick={() => onReject(emp.id, leave.id)}
-                          className="flex-1 rounded-lg border border-red-200 bg-red-50 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition-colors"
-                        >
-                          ✕ Reject
-                        </button>
+                      <div className="space-y-2 pt-1">
+                        <textarea
+                          placeholder="Optional remarks/reason..."
+                          value={remarks[leave.id] || ""}
+                          onChange={(e) => setRemarks({ ...remarks, [leave.id]: e.target.value })}
+                          className="w-full text-xs rounded-lg border border-slate-200 bg-white p-2 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-1 focus:ring-violet-100 resize-none"
+                          rows={2}
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => onApprove(emp.id, leave.id, remarks[leave.id] || "")}
+                            className="flex-1 rounded-lg bg-emerald-600 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500 transition-colors"
+                          >
+                            ✓ Approve
+                          </button>
+                          <button
+                            onClick={() => onReject(emp.id, leave.id, remarks[leave.id] || "")}
+                            className="flex-1 rounded-lg border border-red-200 bg-red-50 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition-colors"
+                          >
+                            ✕ Reject
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -176,6 +192,7 @@ export default function ManagerTeamPage() {
             days: daysBetween(l.startDate, l.endDate),
             reason: l.reason,
             status: l.status,
+            managerRemarks: l.managerRemarks,
           });
         });
         setLeavesMap(groups);
@@ -225,9 +242,12 @@ export default function ManagerTeamPage() {
   const onLeaveCount = team.filter((e) => checkIsOnLeave(e.id)).length;
   const pendingApprovals = Object.values(leavesMap).flat().filter((l) => l.status === "PENDING").length;
 
-  async function handleApprove(empId, leaveId) {
+  async function handleApprove(empId, leaveId, remarks) {
     try {
-      const response = await apiFetch(`/leaves/${leaveId}/approve`, { method: "POST" });
+      const response = await apiFetch(`/leaves/${leaveId}/approve`, {
+        method: "POST",
+        body: JSON.stringify({ remarks }),
+      });
       if (response.success) {
         await loadTeamData();
       }
@@ -236,9 +256,12 @@ export default function ManagerTeamPage() {
     }
   }
 
-  async function handleReject(empId, leaveId) {
+  async function handleReject(empId, leaveId, remarks) {
     try {
-      const response = await apiFetch(`/leaves/${leaveId}/reject`, { method: "POST" });
+      const response = await apiFetch(`/leaves/${leaveId}/reject`, {
+        method: "POST",
+        body: JSON.stringify({ remarks }),
+      });
       if (response.success) {
         await loadTeamData();
       }
