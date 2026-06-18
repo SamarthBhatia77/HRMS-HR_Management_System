@@ -1,0 +1,3 @@
+ALTER TABLE employee ADD COLUMN address TEXT NULL;
+ALTER TABLE employee ADD COLUMN phone_number VARCHAR(40) NULL;
+ALTER TABLE employee ADD COLUMN profile_pic VARCHAR(255) NULL;

@@ -1,0 +1,2 @@
+ALTER TABLE employee ADD COLUMN linkedin_url VARCHAR(255) NULL;
+ALTER TABLE employee ADD COLUMN bio TEXT NULL;

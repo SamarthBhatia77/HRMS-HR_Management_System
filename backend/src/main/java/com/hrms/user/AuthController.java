@@ -31,7 +31,8 @@ public class AuthController {
             String email,
             String role,
             String fullName,
-            String employeeId
+            String employeeId,
+            String profilePic
     ) {}
 
     @PostMapping("/login")
@@ -47,13 +48,15 @@ public class AuthController {
         Optional<Employee> employeeOpt = employeeRepository.findByUserId(appUser.getId());
         String fullName = employeeOpt.map(Employee::getFullName).orElse("System User");
         String employeeId = employeeOpt.map(Employee::getId).orElse(null);
+        String profilePic = employeeOpt.map(Employee::getProfilePic).orElse(null);
 
         LoginResponse response = new LoginResponse(
                 appUser.getId(),
                 appUser.getEmail(),
                 appUser.getRole().name(),
                 fullName,
-                employeeId
+                employeeId,
+                profilePic
         );
 
         return ResponseEntity.ok(ApiResponse.ok("Login successful", response));

@@ -3,6 +3,9 @@
 import { usePathname, useRouter } from "next/navigation";
 import { logoutUser } from "@/lib/auth-storage";
 import { NotificationBell } from "./notification-bell";
+import { UserProfileDropdown } from "./user-profile-dropdown";
+import { ProfileSearch } from "./profile-search";
+import { DarkModeToggle } from "./dark-mode-toggle";
 
 const HR_NAV = [
   {
@@ -20,6 +23,15 @@ const HR_NAV = [
     icon: (
       <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Circulars",
+    href: "/circulars",
+    icon: (
+      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
       </svg>
     ),
   },
@@ -82,10 +94,10 @@ function NavLink({ label, href, icon, pathname }) {
         "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
         active
           ? "bg-brand-700 text-white shadow-sm"
-          : "text-slate-600 hover:bg-brand-50 hover:text-brand-700",
+          : "text-slate-600 dark:text-slate-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 dark:hover:text-brand-300",
       ].join(" ")}
     >
-      <span className={["transition-colors", active ? "text-white" : "text-slate-400 group-hover:text-brand-600"].join(" ")}>
+      <span className={["transition-colors", active ? "text-white" : "text-slate-400 dark:text-slate-500 group-hover:text-brand-600 dark:group-hover:text-brand-400"].join(" ")}>
         {icon}
       </span>
       {label}
@@ -104,19 +116,19 @@ export function AppShell({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors duration-200">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-200 bg-white flex-col md:flex">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex-col md:flex transition-colors duration-200">
         {/* Logo */}
-        <div className="flex items-center gap-3 px-5 h-16 border-b border-slate-100 flex-shrink-0">
+        <div className="flex items-center gap-3 px-5 h-16 border-b border-slate-100 dark:border-slate-800/30 flex-shrink-0">
           <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center shadow-sm">
             <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21l16.5-9L3.75 3v7.5l11.25 1.5L3.75 13.5V21z" />
             </svg>
           </div>
           <div>
-            <p className="text-sm font-bold text-slate-900 leading-none">HRMS</p>
-            <p className="text-[10px] font-semibold text-brand-600 uppercase tracking-widest mt-0.5">HR Operations</p>
+            <p className="text-sm font-bold text-slate-900 dark:text-slate-100 leading-none">HRMS</p>
+            <p className="text-[10px] font-semibold text-brand-600 dark:text-brand-400 uppercase tracking-widest mt-0.5">HR Operations</p>
           </div>
         </div>
 
@@ -128,7 +140,7 @@ export function AppShell({ children }) {
 
           {/* HR Tools section */}
           <div className="px-3 pt-5 pb-1">
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400">HR Tools</p>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500">HR Tools</p>
           </div>
           {HR_TOOLS_NAV.map((item) => (
             <NavLink key={item.href} {...item} pathname={pathname} />
@@ -136,12 +148,12 @@ export function AppShell({ children }) {
         </nav>
 
         {/* Bottom logout */}
-        <div className="p-3 border-t border-slate-100 flex-shrink-0">
+        <div className="p-3 border-t border-slate-100 dark:border-slate-800/40 flex-shrink-0">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-red-50 hover:text-red-600 transition-colors group"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-600 dark:hover:text-red-400 transition-colors group"
           >
-            <svg className="w-4 h-4 text-slate-400 group-hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+            <svg className="w-4 h-4 text-slate-400 dark:text-slate-500 group-hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
             </svg>
             Sign Out
@@ -151,11 +163,14 @@ export function AppShell({ children }) {
 
       {/* Main content */}
       <div className="md:pl-64">
-        <header className="sticky top-0 z-20 h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md px-6 flex items-center justify-between">
-          <span className="text-sm font-medium text-slate-600">HR Operations Workspace</span>
+        <header className="sticky top-0 z-20 h-16 border-b border-slate-200 dark:border-slate-800/60 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-6 flex items-center justify-between transition-colors duration-200">
+          <span className="text-sm font-medium text-slate-600 dark:text-slate-300">HR Operations Workspace</span>
+          <ProfileSearch />
           <div className="flex items-center gap-4">
-            <span className="rounded-full bg-brand-50 border border-brand-100 px-3 py-1 text-xs font-semibold text-brand-700">HR Admin</span>
+            <span className="rounded-full bg-brand-50 dark:bg-brand-950/30 border border-brand-100 dark:border-brand-900/30 px-3 py-1 text-xs font-semibold text-brand-700 dark:text-brand-400">HR Admin</span>
+            <DarkModeToggle />
             <NotificationBell />
+            <UserProfileDropdown />
           </div>
         </header>
         <main className="p-6">{children}</main>

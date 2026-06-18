@@ -25,6 +25,7 @@ export async function loginUser(email, password) {
     role: userData.role,
     fullName: userData.fullName,
     employeeId: userData.employeeId,
+    profilePic: userData.profilePic,
     authHeader: authHeader
   };
 
@@ -38,6 +39,23 @@ export function getSession() {
     const raw = localStorage.getItem(SESSION_KEY);
     return raw ? JSON.parse(raw) : null;
   } catch {
+    return null;
+  }
+}
+
+export function updateSession(updates) {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const current = JSON.parse(raw);
+    const updated = { ...current, ...updates };
+    localStorage.setItem(SESSION_KEY, JSON.stringify(updated));
+    // Dispatch custom event to let dropdown and headers update immediately
+    window.dispatchEvent(new Event("session-update"));
+    return updated;
+  } catch (e) {
+    console.error("Failed to update session storage", e);
     return null;
   }
 }

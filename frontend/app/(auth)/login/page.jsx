@@ -53,7 +53,7 @@ export default function LoginPage() {
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="admin@hrms.com"
+          placeholder="Enter your email address"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />

@@ -135,6 +135,43 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
+    public Employee getEmployeeByEmail(String email) {
+        AppUser user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+        return employeeRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Employee profile not found for user: " + user.getId()));
+    }
+
+    public Employee getEmployeeById(String id) {
+        return employeeRepository.findByIdWithUserAndManager(id)
+                .orElseThrow(() -> new IllegalArgumentException("Employee not found with ID: " + id));
+    }
+
+    public List<Employee> searchEmployees(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return employeeRepository.findAll();
+        }
+        return employeeRepository.searchEmployees(query.trim());
+    }
+
+    @Transactional
+    public Employee updateProfile(String email, String address, String phoneNumber, String linkedinUrl, String bio) {
+        Employee employee = getEmployeeByEmail(email);
+        employee.setAddress(address);
+        employee.setPhoneNumber(phoneNumber);
+        employee.setLinkedinUrl(linkedinUrl);
+        employee.setBio(bio);
+        return employeeRepository.save(employee);
+    }
+
+    @Transactional
+    public Employee updateProfilePic(String email, String profilePic) {
+        Employee employee = getEmployeeByEmail(email);
+        employee.setProfilePic(profilePic);
+        return employeeRepository.save(employee);
+    }
+
+
     private String generateTemporaryPassword() {
         String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$";
         SecureRandom random = new SecureRandom();

@@ -321,7 +321,7 @@ export default function AttendancePage() {
               ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
               : "bg-rose-50 text-rose-700 border-rose-100"
           }`}>
-            {inRange ? "● In Geofence" : "○ Out of Range"}
+            {inRange ? "● In Geofence Range" : "○ Out of Range"}
           </div>
 
           {/* Circular Button Wrapper */}
@@ -357,7 +357,7 @@ export default function AttendancePage() {
             onClick={requestUserLocation} 
             className="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center gap-1 mt-1 hover:underline"
           >
-            🔄 Refresh Location
+            Refresh Location
           </button>
         </div>
 
