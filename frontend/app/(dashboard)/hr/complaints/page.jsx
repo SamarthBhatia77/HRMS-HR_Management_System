@@ -74,8 +74,8 @@ export default function HrComplaintsPortal() {
     <div className="max-w-6xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Complaints & Flags</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Complaints & Flags</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Review and take action on employees flagged by managers for behavioral, policy, or performance issues.
         </p>
       </div>
@@ -83,20 +83,20 @@ export default function HrComplaintsPortal() {
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: "Total Incidents", val: total, bg: "bg-slate-50", text: "text-slate-700" },
-          { label: "Under Review", val: underReview, bg: "bg-amber-50", text: "text-amber-700" },
-          { label: "Resolved Cases", val: resolved, bg: "bg-emerald-50", text: "text-emerald-700" },
-          { label: "High Severity", val: highSeverity, bg: "bg-red-50", text: "text-red-700" },
+          { label: "Total Incidents", val: total, bg: "bg-slate-50 dark:bg-slate-900", text: "text-slate-700 dark:text-slate-200" },
+          { label: "Under Review", val: underReview, bg: "bg-amber-50 dark:bg-amber-950/20", text: "text-amber-700 dark:text-amber-400" },
+          { label: "Resolved Cases", val: resolved, bg: "bg-emerald-50 dark:bg-emerald-950/20", text: "text-emerald-700 dark:text-emerald-400" },
+          { label: "High Severity", val: highSeverity, bg: "bg-red-50 dark:bg-red-950/20", text: "text-red-700 dark:text-red-400" },
         ].map(({ label, val, bg, text }) => (
-          <div key={label} className={`${bg} rounded-2xl p-4 text-center border border-white shadow-sm`}>
+          <div key={label} className={`${bg} rounded-2xl p-4 text-center border border-white dark:border-slate-800/40 shadow-sm`}>
             <p className={`text-3xl font-bold ${text}`}>{val}</p>
-            <p className="text-xs font-medium text-slate-500 mt-1">{label}</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{label}</p>
           </div>
         ))}
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex border-b border-slate-200">
+      <div className="flex border-b border-slate-200 dark:border-slate-800">
         {[
           ["ALL", "All Flags"],
           ["UNDER_REVIEW", "Under Review"],
@@ -111,7 +111,7 @@ export default function HrComplaintsPortal() {
               className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition-all ${
                 active
                   ? "border-brand-600 text-brand-700 bg-brand-50/20"
-                  : "border-transparent text-slate-500 hover:text-slate-900 hover:bg-slate-50/50"
+                  : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-50/50 dark:hover:bg-slate-800/40"
               }`}
             >
               {label}
@@ -122,7 +122,7 @@ export default function HrComplaintsPortal() {
 
       {/* Complaints List */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200 bg-white p-12 text-center text-slate-400 italic">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center text-slate-400 dark:text-slate-500 italic">
           No complaints in this category.
         </div>
       ) : (
@@ -130,37 +130,37 @@ export default function HrComplaintsPortal() {
           {filtered.map((c) => {
             // Colors
             let sevClass = "";
-            if (c.severity === "LOW") sevClass = "bg-yellow-50 text-yellow-700 border-yellow-200";
-            if (c.severity === "MEDIUM") sevClass = "bg-amber-50 text-amber-700 border-amber-200";
-            if (c.severity === "HIGH") sevClass = "bg-red-50 text-red-700 border-red-200";
+            if (c.severity === "LOW") sevClass = "bg-yellow-50 dark:bg-yellow-950/20 text-yellow-700 dark:text-yellow-400 border-yellow-200 dark:border-yellow-900/30";
+            if (c.severity === "MEDIUM") sevClass = "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-900/30";
+            if (c.severity === "HIGH") sevClass = "bg-red-50 dark:bg-red-950/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/30";
 
             let statusClass = "";
             let statusLabel = "";
             if (c.status === "UNDER_REVIEW") {
-              statusClass = "bg-amber-100 text-amber-800 border-amber-200";
+              statusClass = "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-450 border-amber-200 dark:border-amber-900/30";
               statusLabel = "Under Review";
             } else if (c.status === "RESOLVED") {
-              statusClass = "bg-emerald-100 text-emerald-800 border-emerald-200";
+              statusClass = "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-450 border-emerald-200 dark:border-emerald-900/30";
               statusLabel = "Resolved";
             } else {
-              statusClass = "bg-slate-100 text-slate-800 border-slate-200";
+              statusClass = "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700";
               statusLabel = "Dismissed";
             }
 
             return (
               <div
                 key={c.id}
-                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row md:items-start md:justify-between gap-4"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row md:items-start md:justify-between gap-4"
               >
                 {/* Details */}
                 <div className="space-y-3 flex-1">
                   <div className="flex items-start flex-wrap gap-2.5">
                     <div>
-                      <h3 className="text-sm font-semibold text-slate-900">
+                      <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                         Flagged: {c.employeeName} ({c.employeeDept})
                       </h3>
-                      <p className="text-xs text-slate-500 mt-0.5">
-                        Reported by Manager: <strong className="text-slate-700">{c.managerName}</strong>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                        Reported by Manager: <strong className="text-slate-700 dark:text-slate-300">{c.managerName}</strong>
                       </p>
                     </div>
                     <div className="flex gap-2">
@@ -173,14 +173,14 @@ export default function HrComplaintsPortal() {
                     </div>
                   </div>
 
-                  <div className="rounded-xl bg-slate-50 p-4 border border-slate-100">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Manager Statement</p>
-                    <p className="text-xs text-slate-700 mt-1 leading-relaxed">
+                  <div className="rounded-xl bg-slate-50 dark:bg-slate-950 p-4 border border-slate-100 dark:border-slate-800/60">
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-450 uppercase tracking-wide">Manager Statement</p>
+                    <p className="text-xs text-slate-700 dark:text-slate-300 mt-1 leading-relaxed">
                       "{c.reason}"
                     </p>
                   </div>
 
-                  <div className="flex items-center gap-4 text-[10px] text-slate-400">
+                  <div className="flex items-center gap-4 text-[10px] text-slate-400 dark:text-slate-500">
                     <span>Incident Date: {fmtDate(c.incidentDate)}</span>
                     <span>•</span>
                     <span>Filed on: {fmtDate(c.createdAt)}</span>
@@ -199,7 +199,7 @@ export default function HrComplaintsPortal() {
                       </button>
                       <button
                         onClick={() => updateStatus(c.id, "DISMISSED")}
-                        className="flex-1 md:flex-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors"
+                        className="flex-1 md:flex-none rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-850 transition-colors"
                       >
                         ✕ Dismiss Case
                       </button>
@@ -208,7 +208,7 @@ export default function HrComplaintsPortal() {
                   {c.status !== "UNDER_REVIEW" && (
                     <button
                       onClick={() => updateStatus(c.id, "UNDER_REVIEW")}
-                      className="w-full md:w-auto rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                      className="w-full md:w-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-2 text-xs font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-850 transition-colors"
                     >
                       Re-open Investigation
                     </button>

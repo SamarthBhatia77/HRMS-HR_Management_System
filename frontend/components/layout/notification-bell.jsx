@@ -77,7 +77,7 @@ export function NotificationBell() {
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-all duration-150 focus:outline-none"
+        className="relative p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all duration-150 focus:outline-none"
         aria-label="View notifications"
       >
         <svg
@@ -95,7 +95,7 @@ export function NotificationBell() {
         </svg>
 
         {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white">
+          <span className="absolute top-1.5 right-1.5 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white ring-2 ring-white dark:ring-slate-900">
             {unreadCount}
           </span>
         )}
@@ -103,7 +103,7 @@ export function NotificationBell() {
 
       {/* Dropdown Panel */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
+        <div className="absolute right-0 mt-2 w-80 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
           <div className="px-4 py-3 bg-gradient-to-r from-violet-600 to-indigo-600 text-white flex items-center justify-between">
             <span className="text-sm font-semibold">Notifications</span>
             {unreadCount > 0 && (
@@ -116,9 +116,9 @@ export function NotificationBell() {
             )}
           </div>
 
-          <div className="max-h-64 overflow-y-auto divide-y divide-slate-100">
+          <div className="max-h-64 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60">
             {notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 text-xs italic">
+              <div className="p-8 text-center text-slate-400 dark:text-slate-500 text-xs italic">
                 No notifications yet.
               </div>
             ) : (
@@ -128,7 +128,9 @@ export function NotificationBell() {
                   onClick={() => !n.isRead && handleMarkSingleRead(n.id)}
                   className={[
                     "p-3.5 text-left text-xs transition-colors cursor-pointer",
-                    n.isRead ? "bg-white hover:bg-slate-50" : "bg-violet-50/50 hover:bg-violet-50",
+                    n.isRead 
+                      ? "bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800/60" 
+                      : "bg-violet-50/50 dark:bg-violet-950/20 hover:bg-violet-50 dark:hover:bg-violet-950/30",
                   ].join(" ")}
                 >
                   <div className="flex items-start gap-2.5">
@@ -138,17 +140,17 @@ export function NotificationBell() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className={[
-                        "text-slate-700 leading-normal",
+                        "text-slate-700 dark:text-slate-200 leading-normal",
                         !n.isRead ? "font-semibold" : "font-normal",
                       ].join(" ")}>
                         {n.message}
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">
+                      <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                         {formatTime(n.createdAt)}
                       </p>
                     </div>
                     {!n.isRead && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-violet-600 flex-shrink-0 mt-1.5" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-violet-600 dark:bg-violet-400 flex-shrink-0 mt-1.5" />
                     )}
                   </div>
                 </div>

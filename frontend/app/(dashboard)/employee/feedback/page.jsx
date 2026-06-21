@@ -107,22 +107,22 @@ export default function EmployeeFeedbackPage() {
     <div className="max-w-3xl mx-auto space-y-6">
       {/* ── Page Header ─────────────────────────────────────── */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Feedback Portal</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Feedback Portal</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Share your thoughts openly. All feedback is reviewed by your manager and the HR Admin.
         </p>
       </div>
 
       {/* ── Info Banner ─────────────────────────────────────── */}
-      <div className="flex items-start gap-3 rounded-2xl bg-indigo-50 border border-indigo-100 px-5 py-4">
-        <div className="h-9 w-9 rounded-xl bg-indigo-100 flex items-center justify-center flex-shrink-0">
-          <svg className="w-5 h-5 text-indigo-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <div className="flex items-start gap-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 px-5 py-4">
+        <div className="h-9 w-9 rounded-xl bg-indigo-100 dark:bg-indigo-950/40 flex items-center justify-center flex-shrink-0">
+          <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 18v-5.25m0 0a6.01 6.01 0 001.5-.189m-1.5.189a6.01 6.01 0 01-1.5-.189m3.75 7.478a12.06 12.06 0 01-4.5 0m3.75 2.383a14.406 14.406 0 01-3 0M14.25 18v-.192c0-.983.658-1.823 1.508-2.316a7.5 7.5 0 10-7.517 0c.85.493 1.509 1.333 1.509 2.316V18" />
           </svg>
         </div>
         <div>
-          <p className="text-sm font-semibold text-indigo-800">Your feedback makes a difference</p>
-          <p className="text-xs text-indigo-600 mt-0.5 leading-relaxed">
+          <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300">Your feedback makes a difference</p>
+          <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-0.5 leading-relaxed">
             Submissions go directly to your reporting manager and the HR Admin. You can choose to remain anonymous.
             Constructive feedback helps build a better workplace.
           </p>
@@ -131,7 +131,7 @@ export default function EmployeeFeedbackPage() {
 
       {/* ── Success toast ───────────────────────────────────── */}
       {successMsg && (
-        <div className="flex items-center gap-3 rounded-xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-700 font-medium">
+        <div className="flex items-center gap-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/30 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-400 font-medium">
           <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -140,7 +140,7 @@ export default function EmployeeFeedbackPage() {
       )}
 
       {/* ── Feedback Form ───────────────────────────────────── */}
-      <div className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden">
         {/* Form header strip */}
         <div className="bg-gradient-to-r from-indigo-600 to-violet-600 px-6 py-4">
           <h2 className="text-base font-semibold text-white">Submit New Feedback</h2>
@@ -151,7 +151,7 @@ export default function EmployeeFeedbackPage() {
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6" id="feedback-form">
           {formError && (
-            <div className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-200 px-4 py-2.5 text-sm text-red-700">
+            <div className="flex items-center gap-2 rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 px-4 py-2.5 text-sm text-red-700 dark:text-red-400">
               <svg className="w-4 h-4 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
               </svg>
@@ -161,7 +161,7 @@ export default function EmployeeFeedbackPage() {
 
           {/* Category grid */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-2">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-350 mb-2">
               Category <span className="text-red-400">*</span>
             </label>
             <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
@@ -174,8 +174,8 @@ export default function EmployeeFeedbackPage() {
                   className={[
                     "flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-center text-[11px] font-medium transition-all duration-150",
                     category === value
-                      ? "border-indigo-400 bg-indigo-50 text-indigo-700 shadow-sm scale-[1.03]"
-                      : "border-slate-200 bg-slate-50 text-slate-600 hover:border-indigo-200 hover:bg-indigo-50/40 hover:scale-[1.02]",
+                      ? "border-indigo-400 dark:border-indigo-500 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-400 shadow-sm scale-[1.03]"
+                      : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:border-indigo-200 dark:hover:border-indigo-900/30 hover:bg-indigo-50/40 hover:scale-[1.02]",
                   ].join(" ")}
                 >
                   <span className="text-xl leading-none">{icon}</span>
@@ -187,17 +187,17 @@ export default function EmployeeFeedbackPage() {
 
           {/* Rating */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-2">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-350 mb-2">
               Overall Rating <span className="text-red-400">*</span>
             </label>
-            <div className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3">
               <StarRating value={rating} onChange={setRating} />
             </div>
           </div>
 
           {/* Title */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1.5">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-350 mb-1.5">
               Feedback Title <span className="text-red-400">*</span>
             </label>
             <input
@@ -207,18 +207,18 @@ export default function EmployeeFeedbackPage() {
               onChange={(e) => setTitle(e.target.value)}
               maxLength={120}
               placeholder="Summarise your feedback in a sentence…"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100"
             />
           </div>
 
           {/* Details */}
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="block text-xs font-semibold text-slate-700">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-350">
                 Details <span className="text-red-400">*</span>
               </label>
               <span
-                className={`text-xs ${charCount > MAX_CHARS ? "text-red-500 font-semibold" : "text-slate-400"}`}
+                className={`text-xs ${charCount > MAX_CHARS ? "text-red-500 font-semibold" : "text-slate-400 dark:text-slate-500"}`}
               >
                 {charCount} / {MAX_CHARS}
               </span>
@@ -229,37 +229,37 @@ export default function EmployeeFeedbackPage() {
               onChange={(e) => setDetails(e.target.value)}
               rows={5}
               placeholder="Describe your feedback in detail. What worked well? What could be better? Be specific and constructive."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 resize-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 resize-none"
             />
           </div>
 
           {/* Anonymous toggle */}
           <label
             htmlFor="anon-toggle"
-            className="flex items-start gap-3 cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 hover:bg-indigo-50/30 hover:border-indigo-200 transition-colors"
+            className="flex items-start gap-3 cursor-pointer rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 px-4 py-3 hover:bg-indigo-50/30 dark:hover:bg-indigo-950/20 hover:border-indigo-200 dark:hover:border-indigo-900/30 transition-colors"
           >
             <input
               id="anon-toggle"
               type="checkbox"
               checked={anonymous}
               onChange={(e) => setAnonymous(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 text-indigo-600 focus:ring-indigo-500 dark:bg-slate-900 cursor-pointer"
             />
             <div>
-              <p className="text-sm font-semibold text-slate-700">Submit anonymously</p>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">Submit anonymously</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Your name will not be shown to the feedback recipient. HR can still trace submissions if required by policy.
               </p>
             </div>
           </label>
 
           {/* Submit button */}
-          <div className="flex justify-end pt-1 border-t border-slate-100">
+          <div className="flex justify-end pt-1 border-t border-slate-100 dark:border-slate-800">
             <button
               type="submit"
               id="feedback-submit-btn"
               disabled={submitting}
-              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 hover:bg-indigo-500 disabled:opacity-60 active:scale-95 transition-all"
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 dark:shadow-none hover:bg-indigo-500 disabled:opacity-60 active:scale-95 transition-all"
             >
               {submitting ? (
                 <>
@@ -285,7 +285,7 @@ export default function EmployeeFeedbackPage() {
       {/* ── Past Feedback ────────────────────────────────────── */}
       {feedbackList.length > 0 && (
         <div>
-          <h2 className="text-sm font-semibold text-slate-800 mb-3">
+          <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3">
             Your Submitted Feedback
           </h2>
           <div className="space-y-3" id="feedback-history">
@@ -294,32 +294,32 @@ export default function EmployeeFeedbackPage() {
               return (
                 <div
                   key={fb.id}
-                  className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow"
+                  className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-start gap-4">
                     {/* Category icon bubble */}
-                    <div className="h-10 w-10 rounded-xl bg-indigo-50 flex items-center justify-center text-xl flex-shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100/50 dark:border-indigo-900/40 flex items-center justify-center text-xl flex-shrink-0">
                       {cat.icon}
                     </div>
 
                     <div className="flex-1 min-w-0">
                       {/* Title row */}
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-semibold text-slate-900">{fb.title}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{fb.title}</p>
                         {fb.anonymous && (
-                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500 uppercase tracking-wide">
+                          <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[10px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
                             Anonymous
                           </span>
                         )}
                       </div>
 
                       {/* Meta */}
-                      <p className="text-xs text-slate-400 mt-0.5">
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
                         {cat.label} &nbsp;·&nbsp; {fmtDate(fb.submittedOn)}
                       </p>
 
                       {/* Details */}
-                      <p className="mt-2 text-sm text-slate-600 leading-relaxed line-clamp-3">
+                      <p className="mt-2 text-sm text-slate-600 dark:text-slate-350 leading-relaxed line-clamp-3">
                         {fb.details}
                       </p>
                     </div>

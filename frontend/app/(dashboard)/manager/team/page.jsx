@@ -31,7 +31,11 @@ function Initials({ name, size = "md" }) {
 }
 
 function AttendanceBadge({ pct }) {
-  const color = pct >= 90 ? "text-emerald-700 bg-emerald-50 border-emerald-200" : pct >= 75 ? "text-amber-700 bg-amber-50 border-amber-200" : "text-red-700 bg-red-50 border-red-200";
+  const color = pct >= 90 
+    ? "text-emerald-700 bg-emerald-50 border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30" 
+    : pct >= 75 
+      ? "text-amber-700 bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/30" 
+      : "text-red-700 bg-red-50 border-red-200 dark:bg-red-950/20 dark:text-red-400 dark:border-red-900/30";
   return <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold border ${color}`}>{pct}%</span>;
 }
 
@@ -45,7 +49,7 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
       {/* Backdrop */}
       <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
       {/* Panel */}
-      <div className="relative ml-auto w-full max-w-lg bg-white shadow-2xl flex flex-col h-full overflow-y-auto">
+      <div className="relative ml-auto w-full max-w-lg bg-white dark:bg-slate-900 shadow-2xl flex flex-col h-full overflow-y-auto">
         {/* Header */}
         <div className="bg-gradient-to-r from-violet-600 to-indigo-600 px-6 py-5 flex-shrink-0">
           <div className="flex items-start justify-between gap-4">
@@ -68,9 +72,9 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
           {/* Stats */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              ["Attendance", `${attendancePct}%`, attendancePct >= 90 ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"],
-              ["Leaves Left", `${leavesLeft}d`, "bg-violet-50 text-violet-700"],
-              ["Status", onLeave ? "On Leave" : "Active", onLeave ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"],
+              ["Attendance", `${attendancePct}%`, attendancePct >= 90 ? "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400" : "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400"],
+              ["Leaves Left", `${leavesLeft}d`, "bg-violet-50 dark:bg-violet-950/20 text-violet-700 dark:text-violet-400"],
+              ["Status", onLeave ? "On Leave" : "Active", onLeave ? "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400" : "bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400"],
             ].map(([label, val, cls]) => (
               <div key={label} className={`${cls} rounded-xl p-3 text-center`}>
                 <p className="text-lg font-bold">{val}</p>
@@ -81,23 +85,23 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
 
           {/* Leave Requests */}
           <div>
-            <h3 className="text-sm font-semibold text-slate-800 mb-3">Leave Requests</h3>
+            <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-3">Leave Requests</h3>
             {leaves.length === 0 ? (
-              <p className="text-sm text-slate-400 italic text-center py-6">No leave requests from {emp.name.split(" ")[0]}.</p>
+              <p className="text-sm text-slate-400 dark:text-slate-500 italic text-center py-6">No leave requests from {emp.name.split(" ")[0]}.</p>
             ) : (
               <div className="space-y-3">
                 {leaves.map((leave) => (
-                  <div key={leave.id} className="rounded-xl border border-slate-100 bg-slate-50 p-4 space-y-2">
+                  <div key={leave.id} className="rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 p-4 space-y-2">
                     <div className="flex items-start justify-between gap-2">
                       <div>
-                        <p className="text-sm font-semibold text-slate-800">{leave.type}</p>
-                        <p className="text-xs text-slate-500 mt-0.5">
+                        <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">{leave.type}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-450 mt-0.5">
                           {fmtDate(leave.startDate)}{leave.startDate !== leave.endDate && ` → ${fmtDate(leave.endDate)}`}
                           {" · "}{leave.days}d
                         </p>
-                        <p className="text-xs text-slate-400 mt-1 italic">"{leave.reason}"</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 italic">"{leave.reason}"</p>
                         {leave.managerRemarks && (
-                          <p className="text-xs text-violet-750 mt-1.5 font-medium">
+                          <p className="text-xs text-violet-750 dark:text-violet-400 mt-1.5 font-medium">
                             Remarks: <span className="italic">"{leave.managerRemarks}"</span>
                           </p>
                         )}
@@ -110,7 +114,7 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
                           placeholder="Optional remarks/reason..."
                           value={remarks[leave.id] || ""}
                           onChange={(e) => setRemarks({ ...remarks, [leave.id]: e.target.value })}
-                          className="w-full text-xs rounded-lg border border-slate-200 bg-white p-2 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-1 focus:ring-violet-100 resize-none"
+                          className="w-full text-xs rounded-lg border border-slate-200 dark:border-slate-850 bg-white dark:bg-slate-900 p-2 text-slate-950 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-violet-400 focus:outline-none focus:ring-1 focus:ring-violet-100 resize-none"
                           rows={2}
                         />
                         <div className="flex gap-2">
@@ -122,7 +126,7 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
                           </button>
                           <button
                             onClick={() => onReject(emp.id, leave.id, remarks[leave.id] || "")}
-                            className="flex-1 rounded-lg border border-red-200 bg-red-50 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100 transition-colors"
+                            className="flex-1 rounded-lg border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 py-1.5 text-xs font-semibold text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
                           >
                             ✕ Reject
                           </button>
@@ -136,10 +140,10 @@ function EmployeeDrawer({ emp, leaves, onClose, onApprove, onReject, leavesLeft,
           </div>
 
           {/* Report to HR */}
-          <div className="border-t border-slate-100 pt-4">
+          <div className="border-t border-slate-100 dark:border-slate-800 pt-4">
             <a
               href={`/manager/report?emp=${emp.id}`}
-              className="flex items-center justify-center gap-2 w-full rounded-xl border border-red-200 bg-red-50 py-2.5 text-sm font-semibold text-red-700 hover:bg-red-100 transition-colors"
+              className="flex items-center justify-center gap-2 w-full rounded-xl border border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-950/20 py-2.5 text-sm font-semibold text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" />
@@ -282,28 +286,28 @@ export default function ManagerTeamPage() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">My Team</h1>
-        <p className="mt-1 text-sm text-slate-500">View your direct reports, their attendance and leave requests.</p>
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">My Team</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">View your direct reports, their attendance and leave requests.</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
         {[
-          { label: "Team Size",          val: team.length,     bg: "bg-violet-50",  text: "text-violet-700" },
-          { label: "Present Today",       val: presentCount,    bg: "bg-emerald-50", text: "text-emerald-700" },
-          { label: "On Leave",            val: onLeaveCount,    bg: "bg-amber-50",   text: "text-amber-700" },
-          { label: "Pending Approvals",   val: pendingApprovals,bg: "bg-red-50",     text: "text-red-700" },
+          { label: "Team Size",          val: team.length,     bg: "bg-violet-50 dark:bg-violet-950/20",  text: "text-violet-700 dark:text-violet-400" },
+          { label: "Present Today",       val: presentCount,    bg: "bg-emerald-50 dark:bg-emerald-950/20", text: "text-emerald-700 dark:text-emerald-400" },
+          { label: "On Leave",            val: onLeaveCount,    bg: "bg-amber-50 dark:bg-amber-950/20",   text: "text-amber-700 dark:text-amber-400" },
+          { label: "Pending Approvals",   val: pendingApprovals,bg: "bg-red-50 dark:bg-red-950/20",     text: "text-red-700 dark:text-red-400" },
         ].map(({ label, val, bg, text }) => (
-          <div key={label} className={`${bg} rounded-2xl p-4 text-center border border-white shadow-sm`}>
+          <div key={label} className={`${bg} rounded-2xl p-4 text-center border border-white dark:border-slate-800/40 shadow-sm`}>
             <p className={`text-3xl font-bold ${text}`}>{val}</p>
-            <p className="text-xs font-medium text-slate-500 mt-1">{label}</p>
+            <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1">{label}</p>
           </div>
         ))}
       </div>
 
       {/* Search */}
       <div className="relative">
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 dark:text-slate-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
         <input
@@ -311,13 +315,13 @@ export default function ManagerTeamPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search by name or department…"
-          className="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-4 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100"
+          className="w-full rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 pl-9 pr-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100"
         />
       </div>
 
       {/* Team Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-slate-100 bg-white p-12 text-center text-slate-400 italic">
+        <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center text-slate-400 dark:text-slate-500 italic">
           No team members report to you or match the search.
         </div>
       ) : (
@@ -333,27 +337,27 @@ export default function ManagerTeamPage() {
               <button
                 key={emp.id}
                 onClick={() => setSelectedEmp(emp)}
-                className="text-left w-full rounded-2xl border border-slate-100 bg-white p-5 shadow-sm hover:shadow-md hover:border-violet-200 transition-all group"
+                className="text-left w-full rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md hover:border-violet-200 dark:hover:border-violet-800 transition-all group"
               >
                 <div className="flex items-start gap-3 mb-4">
                   <Initials name={emp.name} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 group-hover:text-violet-700 transition-colors truncate">{emp.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">{emp.designation}</p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">{emp.dept}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:text-violet-700 dark:group-hover:text-violet-400 transition-colors truncate">{emp.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">{emp.designation}</p>
+                    <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-0.5">{emp.dept}</p>
                   </div>
                   {onLeave && (
-                    <span className="text-[10px] font-semibold bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full flex-shrink-0">On Leave</span>
+                    <span className="text-[10px] font-semibold bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full flex-shrink-0">On Leave</span>
                   )}
                 </div>
 
                 {/* Attendance bar */}
                 <div className="space-y-1.5 mb-3">
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500">Attendance</span>
+                    <span className="text-slate-500 dark:text-slate-400">Attendance</span>
                     <AttendanceBadge pct={attPct} />
                   </div>
-                  <div className="h-1.5 w-full rounded-full bg-slate-100 overflow-hidden">
+                  <div className="h-1.5 w-full rounded-full bg-slate-100 dark:bg-slate-850 overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${attPct >= 90 ? "bg-emerald-500" : attPct >= 75 ? "bg-amber-500" : "bg-red-400"}`}
                       style={{ width: `${attPct}%` }}
@@ -361,16 +365,17 @@ export default function ManagerTeamPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs text-slate-500">
-                  <span>Leave balance: <strong className="text-slate-700">{leavesLeft}d</strong></span>
+                {/* Info row */}
+                <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                  <span>Leave balance: <strong className="text-slate-700 dark:text-slate-300">{leavesLeft}d</strong></span>
                   {pending > 0 && (
-                    <span className="bg-amber-100 text-amber-700 font-semibold px-2 py-0.5 rounded-full">
+                    <span className="bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 font-semibold px-2 py-0.5 rounded-full">
                       {pending} pending
                     </span>
                   )}
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-violet-600 font-medium">
+                <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-violet-600 dark:text-violet-400 font-medium">
                   <span>View details & leaves</span>
                   <svg className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />

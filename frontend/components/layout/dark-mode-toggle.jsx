@@ -39,7 +39,7 @@ export function DarkModeToggle() {
         {/* Sun Icon */}
         <svg
           className={[
-            "w-5 h-5 absolute transition-all duration-300 transform",
+            "w-5 h-5 absolute top-0 left-0 transition-all duration-300 transform",
             isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100",
           ].join(" ")}
           fill="none"
@@ -57,7 +57,7 @@ export function DarkModeToggle() {
         {/* Moon Icon */}
         <svg
           className={[
-            "w-5 h-5 absolute transition-all duration-300 transform",
+            "w-5 h-5 absolute top-0 left-0 transition-all duration-300 transform",
             isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0",
           ].join(" ")}
           fill="none"

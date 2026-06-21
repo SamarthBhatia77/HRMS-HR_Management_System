@@ -78,6 +78,7 @@ export default function AttendancePage() {
   const [editLng, setEditLng] = useState("");
   const [editRadius, setEditRadius] = useState("");
   const [editAddress, setEditAddress] = useState("");
+  const [editIp, setEditIp] = useState("");
   const [updatingLocation, setUpdatingLocation] = useState(false);
 
   useEffect(() => {
@@ -112,6 +113,7 @@ export default function AttendancePage() {
         setEditLng(locRes.data.longitude.toString());
         setEditRadius(locRes.data.radiusMeters.toString());
         setEditAddress(locRes.data.address || "");
+        setEditIp(locRes.data.officeIp || "");
       }
 
       // 2. Fetch Today's Record
@@ -212,12 +214,13 @@ export default function AttendancePage() {
           longitude: parseFloat(editLng),
           radiusMeters: parseFloat(editRadius),
           address: editAddress,
+          officeIp: editIp,
         }),
       });
 
       if (res.success && res.data) {
         setOfficeLocation(res.data);
-        setMessage({ text: "Office geofencing coordinates updated successfully.", type: "success" });
+        setMessage({ text: "Office geofencing and IP configuration updated successfully.", type: "success" });
         requestUserLocation(); // trigger range recalculation
       }
     } catch (err) {
@@ -234,7 +237,7 @@ export default function AttendancePage() {
   const isCompleted = todayRecord && todayRecord.checkOut;
 
   // Determine button state color, label & disabled status
-  let buttonBg = "bg-slate-300 cursor-not-allowed text-slate-500 border-slate-350";
+  let buttonBg = "bg-slate-300 cursor-not-allowed text-slate-500 border-slate-350 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700";
   let buttonLabel = "Scan Range";
   let statusMessage = "Checking your location range...";
   let pulseAnimation = "";
@@ -245,28 +248,28 @@ export default function AttendancePage() {
   } else if (officeLocation && distance !== null) {
     if (isCheckIn) {
       if (inRange) {
-        buttonBg = "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-200 border-emerald-450 hover:scale-105 active:scale-95 cursor-pointer";
+        buttonBg = "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-200 border-emerald-450 hover:scale-105 active:scale-95 cursor-pointer dark:shadow-none";
         buttonLabel = "Check In";
         statusMessage = "In range. Please mark your attendance.";
         pulseAnimation = "animate-ping absolute inset-0 rounded-full bg-emerald-500 opacity-20 scale-110";
       } else {
-        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed";
+        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed dark:from-rose-950/20 dark:to-rose-900/10 dark:text-rose-400 dark:border-rose-900/50";
         buttonLabel = "Out of range";
         statusMessage = `Out of range! You are ${Math.round(distance)}m away from the office.`;
       }
     } else if (isCheckOut) {
       if (inRange) {
-        buttonBg = "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-200 border-amber-450 hover:scale-105 active:scale-95 cursor-pointer";
+        buttonBg = "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-200 border-amber-450 hover:scale-105 active:scale-95 cursor-pointer dark:shadow-none";
         buttonLabel = "Check Out";
         statusMessage = "In range. Tap to check out.";
         pulseAnimation = "animate-ping absolute inset-0 rounded-full bg-amber-500 opacity-20 scale-110";
       } else {
-        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed";
+        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed dark:from-rose-950/20 dark:to-rose-900/10 dark:text-rose-400 dark:border-rose-900/50";
         buttonLabel = "Out of range";
         statusMessage = `Out of range! You are ${Math.round(distance)}m away from the office.`;
       }
     } else if (isCompleted) {
-      buttonBg = "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed";
+      buttonBg = "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-950 dark:border-slate-800 dark:text-slate-605";
       buttonLabel = "Completed";
       statusMessage = "You have checked out for the day.";
     }
@@ -284,8 +287,8 @@ export default function AttendancePage() {
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-slate-900">Attendance Portal</h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Attendance Portal</h1>
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           Mark your check-in and check-out attendance and browse your monthly records.
         </p>
       </div>
@@ -294,8 +297,8 @@ export default function AttendancePage() {
         <div
           className={`flex items-start gap-3 rounded-xl border px-4 py-3 text-sm font-medium ${
             message.type === "success"
-              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-              : "bg-red-50 border-red-200 text-red-700"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-700 dark:bg-emerald-950/20 dark:border-emerald-900/50 dark:text-emerald-400"
+              : "bg-red-50 border-red-200 text-red-700 dark:bg-red-950/20 dark:border-red-900/50 dark:text-red-400"
           }`}
         >
           <svg className="w-5 h-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -312,14 +315,14 @@ export default function AttendancePage() {
       {/* Main Grid: Attendance Circle on Left, Details & Settings on Right */}
       <div className="grid gap-6 md:grid-cols-3">
         {/* Attendance Circle Card */}
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center space-y-5">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">Time Clock</h2>
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center space-y-5 dark:bg-slate-900 dark:border-slate-800">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Time Clock</h2>
 
           {/* Range Status Bar */}
           <div className={`px-4 py-1.5 rounded-full text-xs font-semibold border ${
             inRange 
-              ? "bg-emerald-50 text-emerald-700 border-emerald-100" 
-              : "bg-rose-50 text-rose-700 border-rose-100"
+              ? "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40" 
+              : "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-450 dark:border-rose-900/40"
           }`}>
             {inRange ? "● In Geofence Range" : "○ Out of Range"}
           </div>
@@ -349,44 +352,44 @@ export default function AttendancePage() {
             </button>
           </div>
 
-          <p className={`text-xs font-semibold ${inRange ? "text-emerald-600" : "text-rose-500"}`}>
+          <p className={`text-xs font-semibold ${inRange ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}>
             {statusMessage}
           </p>
 
           <button 
             onClick={requestUserLocation} 
-            className="text-indigo-600 hover:text-indigo-800 text-xs font-bold flex items-center gap-1 mt-1 hover:underline"
+            className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-xs font-bold flex items-center gap-1 mt-1 hover:underline"
           >
             Refresh Location
           </button>
         </div>
 
         {/* Today's Times & Details Panel */}
-        <div className="md:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6">
+        <div className="md:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col justify-between space-y-6 dark:bg-slate-900 dark:border-slate-800">
           <div className="space-y-4">
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">Today's Attendance Status</h2>
+            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Today's Attendance Status</h2>
             
             {/* Times Row */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col">
-                <span className="text-xs font-medium text-slate-400">Check In</span>
-                <span className="text-xl font-bold text-slate-700 mt-1">
+              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col dark:bg-slate-950 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-400 dark:text-slate-500">Check In</span>
+                <span className="text-xl font-bold text-slate-700 dark:text-slate-200 mt-1">
                   {todayRecord ? fmtTime(todayRecord.checkIn) : "—"}
                 </span>
                 {todayRecord && todayRecord.late && (
-                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-100 rounded-full">
+                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-100 rounded-full dark:text-rose-405 dark:bg-rose-955/30 dark:border-rose-905/50">
                     Late Comer
                   </span>
                 )}
               </div>
 
-              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col">
-                <span className="text-xs font-medium text-slate-400">Check Out</span>
-                <span className="text-xl font-bold text-slate-700 mt-1">
+              <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 flex flex-col dark:bg-slate-950 dark:border-slate-800">
+                <span className="text-xs font-medium text-slate-400 dark:text-slate-500">Check Out</span>
+                <span className="text-xl font-bold text-slate-700 dark:text-slate-200 mt-1">
                   {todayRecord ? fmtTime(todayRecord.checkOut) : "—"}
                 </span>
                 {todayRecord && todayRecord.overtime && (
-                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-full">
+                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-full dark:text-violet-405 dark:bg-violet-955/30 dark:border-violet-905/50">
                     Overtime
                   </span>
                 )}
@@ -394,25 +397,28 @@ export default function AttendancePage() {
             </div>
 
             {/* Geofence target details */}
-            <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-2">
-              <span className="text-xs font-bold text-indigo-800 uppercase tracking-wide">Target Worksite Geofence</span>
-              <div className="grid gap-2 sm:grid-cols-2 text-xs text-indigo-700 mt-1">
+            <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-2 dark:bg-indigo-950/20 dark:border-indigo-900/50">
+              <span className="text-xs font-bold text-indigo-800 dark:text-indigo-400 uppercase tracking-wide">Target Worksite Geofence</span>
+              <div className="grid gap-2 sm:grid-cols-2 text-xs text-indigo-700 dark:text-indigo-300 mt-1">
                 <div>
-                  <span className="font-semibold">Address:</span> {officeLocation?.address || "N/A"}
+                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Address:</span> {officeLocation?.address || "N/A"}
                 </div>
                 <div>
-                  <span className="font-semibold">Radius Limit:</span> {officeLocation?.radiusMeters}m
+                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Radius Limit:</span> {officeLocation?.radiusMeters}m
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Office IP Check:</span> {officeLocation?.officeIp ? <code className="bg-indigo-100/50 px-1.5 py-0.5 rounded font-mono text-[11px] dark:bg-indigo-950/50">{officeLocation.officeIp}</code> : <span className="text-slate-400 italic">None (Bypassed)</span>}
                 </div>
                 {userCoords && (
-                  <div className="sm:col-span-2 text-slate-500 mt-1 border-t border-indigo-100/40 pt-2">
-                    <span className="font-semibold text-indigo-700">Detected Coordinates:</span> Lat: {userCoords.latitude.toFixed(6)}, Lng: {userCoords.longitude.toFixed(6)}
+                  <div className="sm:col-span-2 text-slate-500 dark:text-slate-400 mt-1 border-t border-indigo-100/40 dark:border-indigo-900/30 pt-2">
+                    <span className="font-semibold text-indigo-700 dark:text-indigo-400">Detected Coordinates:</span> Lat: {userCoords.latitude.toFixed(6)}, Lng: {userCoords.longitude.toFixed(6)}
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          <div className="text-[11px] text-slate-400">
+          <div className="text-[11px] text-slate-400 dark:text-slate-500">
             * Daily Check-In opens at any time, but entries after 10:15 AM are marked "Late". Daily Check-Out after 5:45 PM is recorded as "Overtime". All late and overtime exceptions report immediately to your manager.
           </div>
         </div>
@@ -420,60 +426,70 @@ export default function AttendancePage() {
 
       {/* HR Admin Coordinates config card */}
       {isHrAdmin && (
-        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">Office Location Management (HR Admin Only)</h2>
+        <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4 dark:bg-slate-900 dark:border-slate-800">
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Office Location & Network Management (HR Admin Only)</h2>
           <form onSubmit={handleUpdateLocation} className="grid gap-4 sm:grid-cols-4 items-end">
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Latitude</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Latitude</label>
               <input
                 type="number"
                 step="0.000001"
                 required
                 value={editLat}
                 onChange={(e) => setEditLat(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none"
+                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-500"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Longitude</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Longitude</label>
               <input
                 type="number"
                 step="0.000001"
                 required
                 value={editLng}
                 onChange={(e) => setEditLng(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none"
+                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-500"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Radius Limit (Meters)</label>
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Radius Limit (Meters)</label>
               <input
                 type="number"
                 step="1"
                 required
                 value={editRadius}
                 onChange={(e) => setEditRadius(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none"
+                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-500"
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Office IP Address (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. 192.168.10.109"
+                value={editIp}
+                onChange={(e) => setEditIp(e.target.value)}
+                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-500"
+              />
+            </div>
+            <div className="sm:col-span-3 space-y-1">
+              <label className="text-xs font-semibold text-slate-600 dark:text-slate-400">Site Location Address / Remarks</label>
+              <input
+                type="text"
+                value={editAddress}
+                onChange={(e) => setEditAddress(e.target.value)}
+                placeholder="e.g. Noida Film City Office"
+                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-500"
               />
             </div>
             <div>
               <button
                 type="submit"
                 disabled={updatingLocation}
-                className="w-full text-xs bg-indigo-600 hover:bg-indigo-500 font-bold text-white rounded-xl py-2.5 shadow-sm active:scale-95 transition-all"
+                className="w-full text-xs bg-indigo-600 hover:bg-indigo-500 font-bold text-white rounded-xl py-2.5 shadow-sm active:scale-95 transition-all dark:shadow-none"
               >
                 {updatingLocation ? "Saving Settings..." : "Save Config"}
               </button>
-            </div>
-            <div className="sm:col-span-4 space-y-1">
-              <label className="text-xs font-semibold text-slate-600">Site Location Address / Remarks</label>
-              <input
-                type="text"
-                value={editAddress}
-                onChange={(e) => setEditAddress(e.target.value)}
-                placeholder="e.g. Noida Film City Office"
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 focus:border-indigo-400 focus:outline-none"
-              />
             </div>
           </form>
         </div>
@@ -482,14 +498,14 @@ export default function AttendancePage() {
       {/* Attendance Log History Section */}
       <div className="space-y-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400">Monthly Attendance History</h2>
+          <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Monthly Attendance History</h2>
           
           {/* Filters */}
           <div className="flex items-center gap-2">
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(parseInt(e.target.value, 10))}
-              className="text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 focus:border-indigo-400 focus:outline-none"
+              className="text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
             >
               {MONTHS.map((m) => (
                 <option key={m.value} value={m.value}>{m.label}</option>
@@ -499,7 +515,7 @@ export default function AttendancePage() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value, 10))}
-              className="text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 focus:border-indigo-400 focus:outline-none"
+              className="text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 focus:border-indigo-400 focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-100"
             >
               {YEARS.map((y) => (
                 <option key={y} value={y}>{y}</option>
@@ -509,16 +525,16 @@ export default function AttendancePage() {
         </div>
 
         {/* History Table */}
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden dark:bg-slate-900 dark:border-slate-800">
           {history.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 italic text-sm">
+            <div className="py-12 text-center text-slate-400 dark:text-slate-500 italic text-sm">
               No attendance logs found for the selected month.
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
                 <thead>
-                  <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <tr className="border-b border-slate-100 bg-slate-50/50 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-950/40 dark:text-slate-400">
                     <th className="px-6 py-3.5">Date</th>
                     <th className="px-6 py-3.5">Check In</th>
                     <th className="px-6 py-3.5">Check Out</th>
@@ -526,47 +542,47 @@ export default function AttendancePage() {
                     <th className="px-6 py-3.5">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 text-slate-600">
+                <tbody className="divide-y divide-slate-100 text-slate-600 dark:divide-slate-800 dark:text-slate-350">
                   {history.map((record) => {
-                    let statusColor = "bg-emerald-50 text-emerald-700 border-emerald-100";
+                    let statusColor = "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40";
                     let statusLabel = "Present";
 
                     if (record.late && record.overtime) {
-                      statusColor = "bg-amber-50 text-amber-800 border-amber-100";
+                      statusColor = "bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40";
                       statusLabel = "Late + Overtime";
                     } else if (record.late) {
-                      statusColor = "bg-rose-50 text-rose-700 border-rose-100";
+                      statusColor = "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40";
                       statusLabel = "Late Arrival";
                     } else if (record.overtime) {
-                      statusColor = "bg-violet-50 text-violet-700 border-violet-100";
+                      statusColor = "bg-violet-50 text-violet-700 border-violet-100 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-900/40";
                       statusLabel = "Overtime";
                     }
 
                     return (
-                      <tr key={record.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">
+                      <tr key={record.id} className="hover:bg-slate-50/50 transition-colors dark:hover:bg-slate-800/30">
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-200 whitespace-nowrap">
                           {fmtDate(record.date)}
                         </td>
-                        <td className="px-6 py-4 font-semibold text-slate-700">
+                        <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
                           {fmtTime(record.checkIn)}
                         </td>
-                        <td className="px-6 py-4 font-semibold text-slate-700">
+                        <td className="px-6 py-4 font-semibold text-slate-700 dark:text-slate-300">
                           {fmtTime(record.checkOut)}
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-1.5 flex-wrap">
                             {record.late && (
-                              <span className="px-2 py-0.5 text-[10px] font-bold bg-rose-50 border border-rose-100 text-rose-700 rounded-full">
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-rose-50 border border-rose-100 text-rose-700 rounded-full dark:bg-rose-950/30 dark:border-rose-900/40 dark:text-rose-400">
                                 Late
                               </span>
                             )}
                             {record.overtime && (
-                              <span className="px-2 py-0.5 text-[10px] font-bold bg-violet-50 border border-violet-100 text-violet-700 rounded-full">
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-violet-50 border border-violet-100 text-violet-700 rounded-full dark:bg-violet-950/30 dark:border-violet-900/40 dark:text-violet-400">
                                 Overtime
                               </span>
                             )}
                             {!record.late && !record.overtime && (
-                              <span className="px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-full">
+                              <span className="px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-full dark:bg-emerald-950/30 dark:border-emerald-900/40 dark:text-emerald-400">
                                 On Time
                               </span>
                             )}

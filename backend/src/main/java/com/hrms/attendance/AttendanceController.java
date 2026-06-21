@@ -3,6 +3,7 @@ package com.hrms.attendance;
 import com.hrms.common.ApiResponse;
 import com.hrms.user.AppUser;
 import com.hrms.user.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,8 @@ public class AttendanceController {
             double latitude,
             double longitude,
             double radiusMeters,
-            String address
+            String address,
+            String officeIp
     ) {}
 
     public record AttendanceResponseDto(
@@ -52,16 +54,18 @@ public class AttendanceController {
             double latitude,
             double longitude,
             double radiusMeters,
-            String address
+            String address,
+            String officeIp
     ) {}
 
     @PostMapping("/mark")
-    public ResponseEntity<ApiResponse<AttendanceResponseDto>> markAttendance(Principal principal, @RequestBody MarkAttendanceDto dto) {
+    public ResponseEntity<ApiResponse<AttendanceResponseDto>> markAttendance(Principal principal, HttpServletRequest request, @RequestBody MarkAttendanceDto dto) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         AppUser user = userRepository.findByEmail(principal.getName()).orElseThrow();
-        Attendance attendance = attendanceService.markAttendance(user.getId(), dto.latitude(), dto.longitude());
+        String clientIp = getClientIp(request);
+        Attendance attendance = attendanceService.markAttendance(user.getId(), dto.latitude(), dto.longitude(), clientIp);
         return ResponseEntity.ok(ApiResponse.ok("Attendance marked successfully.", mapToDto(attendance)));
     }
 
@@ -111,7 +115,7 @@ public class AttendanceController {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
-        OfficeLocation location = attendanceService.updateOfficeLocation(dto.latitude(), dto.longitude(), dto.radiusMeters(), dto.address());
+        OfficeLocation location = attendanceService.updateOfficeLocation(dto.latitude(), dto.longitude(), dto.radiusMeters(), dto.address(), dto.officeIp());
         return ResponseEntity.ok(ApiResponse.ok("Office location updated successfully.", mapToOfficeDto(location)));
     }
 
@@ -138,7 +142,28 @@ public class AttendanceController {
                 o.getLatitude(),
                 o.getLongitude(),
                 o.getRadiusMeters(),
-                o.getAddress()
+                o.getAddress(),
+                o.getOfficeIp()
         );
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip != null && ip.contains(",")) {
+            ip = ip.split(",")[0].trim();
+        }
+        if ("0:0:0:0:0:0:0:1".equals(ip)) {
+            ip = "127.0.0.1";
+        }
+        return ip;
     }
 }

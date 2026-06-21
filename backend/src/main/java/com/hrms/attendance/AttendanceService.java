@@ -38,27 +38,39 @@ public class AttendanceService {
     }
 
     @Transactional
-    public OfficeLocation updateOfficeLocation(double latitude, double longitude, double radiusMeters, String address) {
+    public OfficeLocation updateOfficeLocation(double latitude, double longitude, double radiusMeters, String address, String officeIp) {
         OfficeLocation location;
         List<OfficeLocation> list = officeLocationRepository.findAll();
         if (list.isEmpty()) {
             location = new OfficeLocation(latitude, longitude, radiusMeters, address);
+            location.setOfficeIp(officeIp);
         } else {
             location = list.get(0);
             location.setLatitude(latitude);
             location.setLongitude(longitude);
             location.setRadiusMeters(radiusMeters);
             location.setAddress(address);
+            location.setOfficeIp(officeIp);
         }
         return officeLocationRepository.save(location);
     }
 
     @Transactional
-    public Attendance markAttendance(String userId, double userLat, double userLng) {
+    public Attendance markAttendance(String userId, double userLat, double userLng, String clientIp) {
         Employee employee = employeeRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Employee profile not found for user: " + userId));
 
         OfficeLocation office = getOfficeLocation();
+
+        // Verify client IP address if configured
+        String officeIp = office.getOfficeIp();
+        if (officeIp != null && !officeIp.trim().isEmpty()) {
+            String resolvedClientIp = clientIp != null ? clientIp.trim() : "";
+            if (!officeIp.equalsIgnoreCase(resolvedClientIp)) {
+                throw new IllegalArgumentException("IP verification failed! Your request IP (" + resolvedClientIp + ") does not match the configured office IP (" + officeIp + ").");
+            }
+        }
+
         double distance = calculateDistance(userLat, userLng, office.getLatitude(), office.getLongitude());
 
         if (distance > office.getRadiusMeters()) {

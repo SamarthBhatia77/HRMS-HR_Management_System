@@ -142,8 +142,8 @@ export default function EmployeesPage() {
       {/* Header section */}
       <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Employees Directory</h1>
-          <p className="mt-1 text-sm text-slate-600">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Employees Directory</h1>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
             Manage your company roster, roles, departments, and basic salaries.
           </p>
         </div>
@@ -161,29 +161,29 @@ export default function EmployeesPage() {
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-4 text-sm text-red-700">
+        <div className="rounded-md bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-4 text-sm text-red-700 dark:text-red-400">
           {error}
         </div>
       )}
 
       {/* Roster table */}
-      <div className="overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         {loading ? (
-          <div className="flex py-12 items-center justify-center text-slate-500">
+          <div className="flex py-12 items-center justify-center text-slate-500 dark:text-slate-400">
             Loading employees directory...
           </div>
         ) : employees.length === 0 ? (
-          <div className="flex flex-col py-16 items-center justify-center text-slate-500 space-y-2">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-10 w-10 text-slate-400">
+          <div className="flex flex-col py-16 items-center justify-center text-slate-500 dark:text-slate-450 space-y-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-10 w-10 text-slate-400 dark:text-slate-500">
               <path strokeLinecap="round" strokeLinejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m0 0L6 18c0-3.37 2.73-6.1 6.1-6.1 2.21 0 4.19 1.18 5.3 2.95m-11.4 0A6.07 6.07 0 0112 11.9m0-3.82a3.82 3.82 0 100-7.64 3.82 3.82 0 000 7.64zm7.64 7.64a3.82 3.82 0 100-7.64 3.82 3.82 0 000 7.64z" />
             </svg>
-            <p className="font-medium text-slate-900">No employees found</p>
+            <p className="font-medium text-slate-900 dark:text-slate-100">No employees found</p>
             <p className="text-sm">HR Admins can onboard new employees using the button above.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left text-sm text-slate-500">
-              <thead className="bg-slate-50 text-xs font-semibold uppercase text-slate-700">
+            <table className="w-full border-collapse text-left text-sm text-slate-500 dark:text-slate-400">
+              <thead className="bg-slate-50 dark:bg-slate-950 text-xs font-semibold uppercase text-slate-700 dark:text-slate-300">
                 <tr>
                   <th scope="col" className="px-6 py-4">Name</th>
                   <th scope="col" className="px-6 py-4">Email</th>
@@ -193,27 +193,27 @@ export default function EmployeesPage() {
                   <th scope="col" className="px-6 py-4">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 border-t border-slate-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800 border-t border-slate-100 dark:border-slate-800">
                 {employees.map((emp) => (
-                  <tr key={emp.id} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="px-6 py-4 font-medium text-slate-900">{emp.fullName}</td>
+                  <tr key={emp.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors">
+                    <td className="px-6 py-4 font-medium text-slate-900 dark:text-slate-100">{emp.fullName}</td>
                     <td className="px-6 py-4">{emp.email}</td>
                     <td className="px-6 py-4">
-                      <div className="text-slate-900">{emp.department}</div>
-                      <div className="text-xs text-slate-400">{emp.designation}</div>
+                      <div className="text-slate-900 dark:text-slate-100">{emp.department}</div>
+                      <div className="text-xs text-slate-400 dark:text-slate-500">{emp.designation}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-700 uppercase">
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 text-xs font-semibold text-slate-700 dark:text-slate-350 uppercase">
                         {emp.role}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-slate-600">{emp.managerName || "—"}</td>
+                    <td className="px-6 py-4 text-slate-600 dark:text-slate-300">{emp.managerName || "—"}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${
                           emp.employmentStatus === "ACTIVE"
-                            ? "bg-green-50 text-green-700 border border-green-200"
-                            : "bg-amber-50 text-amber-700 border border-amber-200"
+                            ? "bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-900/30"
+                            : "bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-900/30"
                         }`}
                       >
                         {emp.employmentStatus}
@@ -239,24 +239,24 @@ export default function EmployeesPage() {
 
             <div className="pointer-events-none fixed inset-y-0 right-0 flex max-w-full pl-10">
               <div className="pointer-events-auto w-screen max-w-lg">
-                <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-2xl">
+                <div className="flex h-full flex-col overflow-y-scroll bg-white dark:bg-slate-900 py-6 shadow-2xl">
                   <div className="px-6">
                     <div className="flex items-start justify-between">
-                      <h2 className="text-lg font-semibold text-slate-900" id="slide-over-title">
+                      <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100" id="slide-over-title">
                         Onboard New Employee
                       </h2>
                       <button
                         type="button"
                         onClick={() => setIsDrawerOpen(false)}
-                        className="rounded-md text-slate-400 hover:text-slate-500 focus:outline-none"
+                        className="rounded-md text-slate-400 hover:text-slate-500 dark:text-slate-500 dark:hover:text-slate-400 focus:outline-none"
                       >
                         <span className="sr-only">Close panel</span>
-                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
+                        <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       Fill in the details. A temporary password and password setup link will be generated.
                     </p>
                   </div>
@@ -264,84 +264,82 @@ export default function EmployeesPage() {
                   {/* Onboarding Form */}
                   <form onSubmit={handleOnboard} className="relative mt-6 flex-1 px-6 space-y-5">
                     {formError && (
-                      <div className="rounded-md bg-red-50 p-3 text-xs text-red-700 font-medium">
+                      <div className="rounded-md bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-3 text-xs text-red-700 dark:text-red-400 font-medium">
                         {formError}
                       </div>
                     )}
                     {successMsg && (
-                      <div className="rounded-md bg-green-50 p-4 text-xs text-green-700 font-medium whitespace-pre-line border border-green-200">
+                      <div className="rounded-md bg-green-50 dark:bg-green-950/20 p-4 text-xs text-green-700 dark:text-green-400 font-medium whitespace-pre-line border border-green-200 dark:border-green-900/30">
                         {successMsg}
                       </div>
-                    )}
-
-                    <div className="space-y-4">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Basic Information</h3>
+                    )}                    <div className="space-y-4">
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Basic Information</h3>
                       <div>
-                        <label className="block text-xs font-medium text-slate-700">Full Name *</label>
+                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Full Name *</label>
                         <input
                           type="text"
                           required
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                           placeholder="Jane Doe"
-                          className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                          className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-xs font-medium text-slate-700">Email Address *</label>
+                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Email Address *</label>
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="jane.doe@company.com"
-                          className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                          className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                         />
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Department *</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Department *</label>
                           <input
                             type="text"
                             required
                             value={department}
                             onChange={(e) => setDepartment(e.target.value)}
                             placeholder="Engineering"
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Designation *</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Designation *</label>
                           <input
                             type="text"
                             required
                             value={designation}
                             onChange={(e) => setDesignation(e.target.value)}
                             placeholder="Software Engineer"
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Joining Date *</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Joining Date *</label>
                           <input
                             type="date"
                             required
                             value={joiningDate}
                             onChange={(e) => setJoiningDate(e.target.value)}
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Role *</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Role *</label>
                           <select
                             value={role}
                             onChange={(e) => setRole(e.target.value)}
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           >
                             <option value="EMPLOYEE">Employee</option>
                             <option value="MANAGER">Manager</option>
@@ -351,11 +349,11 @@ export default function EmployeesPage() {
                       </div>
 
                       <div>
-                        <label className="block text-xs font-medium text-slate-700">Reporting Manager</label>
+                        <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Reporting Manager</label>
                         <select
                           value={managerId}
                           onChange={(e) => setManagerId(e.target.value)}
-                          className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                          className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                         >
                           <option value="">Select Reporting Manager (Optional)</option>
                           {managers.map((mgr) => (
@@ -367,12 +365,12 @@ export default function EmployeesPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-4 pt-4 border-t border-slate-100">
-                      <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400">Base Salary Components</h3>
+                    <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                      <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Base Salary Components</h3>
                       
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Base Salary ($ / yr) *</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Base Salary ($ / yr) *</label>
                           <input
                             type="number"
                             required
@@ -381,53 +379,53 @@ export default function EmployeesPage() {
                             value={baseSalary}
                             onChange={(e) => setBaseSalary(e.target.value)}
                             placeholder="80000"
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">HRA ($ / yr)</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">HRA ($ / yr)</label>
                           <input
                             type="number"
                             min="0"
                             step="0.01"
                             value={hra}
                             onChange={(e) => setHra(e.target.value)}
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-950 dark:text-slate-100 bg-white dark:bg-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Transport Allowance ($ / yr)</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Transport Allowance ($ / yr)</label>
                           <input
                             type="number"
                             min="0"
                             step="0.01"
                             value={transportAllowance}
                             onChange={(e) => setTransportAllowance(e.target.value)}
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-955 dark:text-slate-100 bg-white dark:bg-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                         <div>
-                          <label className="block text-xs font-medium text-slate-700">Other Allowances ($ / yr)</label>
+                          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300">Other Allowances ($ / yr)</label>
                           <input
                             type="number"
                             min="0"
                             step="0.01"
                             value={otherAllowance}
                             onChange={(e) => setOtherAllowance(e.target.value)}
-                            className="mt-1.5 w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+                            className="mt-1.5 w-full rounded-md border border-slate-300 dark:border-slate-700 px-3 py-2 text-sm text-slate-955 dark:text-slate-100 bg-white dark:bg-slate-950 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
                           />
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-6 border-t border-slate-100">
+                    <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 dark:border-slate-800">
                       <Button
                         type="button"
                         onClick={() => setIsDrawerOpen(false)}
-                        className="rounded-md border border-slate-300 bg-[#bd0d00] px-4 py-2 text-sm font-medium text-red shadow-sm hover:bg-[#cf4238]"
+                        className="rounded-md border border-slate-300 dark:border-slate-700 bg-[#bd0d00] px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-[#cf4238]"
                       >
                         Cancel
                       </Button>

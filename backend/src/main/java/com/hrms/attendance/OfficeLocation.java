@@ -24,6 +24,9 @@ public class OfficeLocation {
     @Column(name = "address", length = 255)
     private String address;
 
+    @Column(name = "office_ip", length = 45)
+    private String officeIp;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -91,6 +94,14 @@ public class OfficeLocation {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getOfficeIp() {
+        return officeIp;
+    }
+
+    public void setOfficeIp(String officeIp) {
+        this.officeIp = officeIp;
     }
 
     public Instant getCreatedAt() {

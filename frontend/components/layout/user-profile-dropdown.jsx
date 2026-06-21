@@ -65,7 +65,7 @@ export function UserProfileDropdown() {
           <img
             src={`${API_BASE_URL}/employees/profile/avatar/${session.profilePic}`}
             alt={session.fullName}
-            className="h-9 w-9 rounded-full object-cover border-2 border-violet-100 group-hover:border-violet-300 shadow-sm transition-all duration-150"
+            className="h-9 w-9 rounded-full object-cover border-2 border-violet-100 dark:border-violet-900/50 group-hover:border-violet-300 dark:group-hover:border-violet-850 shadow-sm transition-all duration-150"
           />
         ) : (
           <div className="h-9 w-9 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 hover:from-violet-600 hover:to-indigo-700 flex items-center justify-center text-white text-sm font-bold shadow-sm transition-all duration-150">

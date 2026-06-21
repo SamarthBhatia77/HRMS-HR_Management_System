@@ -78,17 +78,17 @@ export function AttendanceCalendar() {
   }
 
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white shadow-sm p-5 select-none">
+    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-5 select-none">
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-slate-800">
+        <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
           {MONTH_NAMES[month]} {year}
         </h3>
         <div className="flex items-center gap-1">
           <button
             onClick={prevMonth}
             aria-label="Previous month"
-            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -98,7 +98,7 @@ export function AttendanceCalendar() {
             onClick={nextMonth}
             disabled={isCurrentMonth}
             aria-label="Next month"
-            className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
+            className="p-1.5 rounded-lg text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200 transition-colors disabled:opacity-25 disabled:cursor-not-allowed"
           >
             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
@@ -110,7 +110,7 @@ export function AttendanceCalendar() {
       {/* ── Day-of-week labels ──────────────────────────────────── */}
       <div className="grid grid-cols-7 mb-1">
         {DAY_LABELS.map((l) => (
-          <div key={l} className="text-center text-[10px] font-semibold text-slate-400 py-1">
+          <div key={l} className="text-center text-[10px] font-semibold text-slate-400 dark:text-slate-500 py-1">
             {l}
           </div>
         ))}
@@ -130,12 +130,12 @@ export function AttendanceCalendar() {
                 className={[
                   "w-7 h-7 flex items-center justify-center rounded-full text-[11px] font-medium transition-all",
                   isToday
-                    ? "bg-violet-600 text-white font-bold shadow-sm shadow-violet-300"
+                    ? "bg-violet-600 text-white font-bold shadow-sm shadow-violet-300 dark:shadow-none"
                     : status === "weekend"
-                    ? "text-slate-300"
+                    ? "text-slate-300 dark:text-slate-600"
                     : status === "future"
-                    ? "text-slate-400"
-                    : "text-slate-700 group-hover:bg-slate-100",
+                    ? "text-slate-400 dark:text-slate-500"
+                    : "text-slate-700 dark:text-slate-300 group-hover:bg-slate-100 dark:group-hover:bg-slate-800",
                 ].join(" ")}
               >
                 {day}
@@ -155,18 +155,18 @@ export function AttendanceCalendar() {
       </div>
 
       {/* ── Stats + Legend ─────────────────────────────────────── */}
-      <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+      <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <div className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span className="font-medium text-emerald-700">{presentCount}</span> Present
+            <span className="font-medium text-emerald-700 dark:text-emerald-400">{presentCount}</span> Present
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <div className="h-2 w-2 rounded-full bg-red-400" />
-            <span className="font-medium text-red-600">{absentCount}</span> Absent
+            <span className="font-medium text-red-600 dark:text-red-400">{absentCount}</span> Absent
           </div>
         </div>
-        <div className="text-[10px] text-slate-400 italic">Mock data</div>
+        <div className="text-[10px] text-slate-400 dark:text-slate-500 italic">Mock data</div>
       </div>
     </div>
   );
