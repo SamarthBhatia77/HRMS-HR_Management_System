@@ -74,3 +74,7 @@ export function readFileAsDataUrl(file) {
     reader.readAsDataURL(file);
   });
 }
+
+export function registerUser(user) {
+  console.log("registerUser mock called", user);
+}

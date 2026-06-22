@@ -68,7 +68,7 @@ export function ProfileSearch() {
           onFocus={() => {
             if (results.length > 0) setIsOpen(true);
           }}
-          className="w-full pl-9 pr-8 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/40 hover:bg-slate-50/80 dark:hover:bg-slate-950/60 focus:bg-white focus:dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all placeholder-slate-400 dark:placeholder-slate-500"
+          className="w-full pl-9 pr-8 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 hover:bg-slate-50/80 dark:hover:bg-slate-950/60 focus:bg-white focus:dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 text-xs font-medium text-slate-700 dark:text-slate-200 transition-all placeholder-slate-400 dark:placeholder-slate-500"
         />
         {/* Search Icon */}
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">

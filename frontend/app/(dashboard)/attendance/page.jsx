@@ -547,14 +547,17 @@ export default function AttendancePage() {
                     let statusColor = "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40";
                     let statusLabel = "Present";
 
-                    if (record.late && record.overtime) {
-                      statusColor = "bg-amber-50 text-amber-800 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40";
+                    if (record.wfh) {
+                      statusColor = "bg-violet-50 text-violet-700 border-violet-150 dark:bg-violet-950/20 dark:text-violet-400 dark:border-violet-900/35";
+                      statusLabel = "Work From Home";
+                    } else if (record.late && record.overtime) {
+                      statusColor = "bg-amber-50 text-amber-805 border-amber-100 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-900/40";
                       statusLabel = "Late + Overtime";
                     } else if (record.late) {
-                      statusColor = "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40";
+                      statusColor = "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-450 dark:border-rose-900/40";
                       statusLabel = "Late Arrival";
                     } else if (record.overtime) {
-                      statusColor = "bg-violet-50 text-violet-700 border-violet-100 dark:bg-violet-950/30 dark:text-violet-400 dark:border-violet-900/40";
+                      statusColor = "bg-violet-50 text-violet-700 border-violet-100 dark:bg-violet-950/30 dark:text-violet-450 dark:border-violet-900/40";
                       statusLabel = "Overtime";
                     }
 
@@ -571,17 +574,22 @@ export default function AttendancePage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex gap-1.5 flex-wrap">
-                            {record.late && (
+                            {record.wfh && (
+                              <span className="px-2 py-0.5 text-[10px] font-bold bg-violet-50 border border-violet-100 text-violet-750 rounded-full dark:bg-violet-950/30 dark:border-violet-900/40 dark:text-violet-400">
+                                WFH
+                              </span>
+                            )}
+                            {!record.wfh && record.late && (
                               <span className="px-2 py-0.5 text-[10px] font-bold bg-rose-50 border border-rose-100 text-rose-700 rounded-full dark:bg-rose-950/30 dark:border-rose-900/40 dark:text-rose-400">
                                 Late
                               </span>
                             )}
-                            {record.overtime && (
+                            {!record.wfh && record.overtime && (
                               <span className="px-2 py-0.5 text-[10px] font-bold bg-violet-50 border border-violet-100 text-violet-700 rounded-full dark:bg-violet-950/30 dark:border-violet-900/40 dark:text-violet-400">
                                 Overtime
                               </span>
                             )}
-                            {!record.late && !record.overtime && (
+                            {!record.wfh && !record.late && !record.overtime && (
                               <span className="px-2 py-0.5 text-[10px] font-semibold bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-full dark:bg-emerald-950/30 dark:border-emerald-900/40 dark:text-emerald-400">
                                 On Time
                               </span>

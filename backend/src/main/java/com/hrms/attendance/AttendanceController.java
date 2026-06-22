@@ -46,7 +46,8 @@ public class AttendanceController {
             String checkIn,
             String checkOut,
             boolean late,
-            boolean overtime
+            boolean overtime,
+            boolean wfh
     ) {}
 
     public record OfficeLocationResponseDto(
@@ -131,7 +132,8 @@ public class AttendanceController {
                 checkInStr,
                 checkOutStr,
                 a.isLate(),
-                a.isOvertime()
+                a.isOvertime(),
+                a.isWfh()
         );
     }
 

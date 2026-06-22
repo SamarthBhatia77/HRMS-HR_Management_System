@@ -53,6 +53,9 @@ public class Employee {
     private String bio;
 
 
+    @Column(name = "wfh_quota", nullable = false)
+    private int wfhQuota = 5;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
@@ -203,6 +206,14 @@ public class Employee {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public int getWfhQuota() {
+        return wfhQuota;
+    }
+
+    public void setWfhQuota(int wfhQuota) {
+        this.wfhQuota = wfhQuota;
     }
 }
 

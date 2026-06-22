@@ -1,17 +1,16 @@
-package com.hrms.attendance;
+package com.hrms.wfh;
 
 import com.hrms.employee.Employee;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "attendance", uniqueConstraints = {
+@Table(name = "wfh_request", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"employee_id", "date"})
 })
-public class Attendance {
+public class WfhRequest {
 
     @Id
     @Column(name = "id", columnDefinition = "CHAR(36)", nullable = false)
@@ -24,20 +23,17 @@ public class Attendance {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    @Column(name = "check_in")
-    private LocalTime checkIn;
+    @Column(name = "reason", nullable = false, columnDefinition = "TEXT")
+    private String reason;
 
-    @Column(name = "check_out")
-    private LocalTime checkOut;
+    @Column(name = "status", nullable = false, length = 40)
+    private String status; // PENDING_MANAGER, PENDING_HR, APPROVED, REJECTED
 
-    @Column(name = "is_late", nullable = false)
-    private boolean isLate;
+    @Column(name = "manager_remarks")
+    private String managerRemarks;
 
-    @Column(name = "is_overtime", nullable = false)
-    private boolean isOvertime;
-
-    @Column(name = "is_wfh", nullable = false)
-    private boolean isWfh = false;
+    @Column(name = "hr_remarks")
+    private String hrRemarks;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -59,15 +55,13 @@ public class Attendance {
         updatedAt = Instant.now();
     }
 
-    public Attendance() {}
+    public WfhRequest() {}
 
-    public Attendance(Employee employee, LocalDate date, LocalTime checkIn, LocalTime checkOut, boolean isLate, boolean isOvertime) {
+    public WfhRequest(Employee employee, LocalDate date, String reason, String status) {
         this.employee = employee;
         this.date = date;
-        this.checkIn = checkIn;
-        this.checkOut = checkOut;
-        this.isLate = isLate;
-        this.isOvertime = isOvertime;
+        this.reason = reason;
+        this.status = status;
     }
 
     public String getId() {
@@ -94,36 +88,36 @@ public class Attendance {
         this.date = date;
     }
 
-    public LocalTime getCheckIn() {
-        return checkIn;
+    public String getReason() {
+        return reason;
     }
 
-    public void setCheckIn(LocalTime checkIn) {
-        this.checkIn = checkIn;
+    public void setReason(String reason) {
+        this.reason = reason;
     }
 
-    public LocalTime getCheckOut() {
-        return checkOut;
+    public String getStatus() {
+        return status;
     }
 
-    public void setCheckOut(LocalTime checkOut) {
-        this.checkOut = checkOut;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public boolean isLate() {
-        return isLate;
+    public String getManagerRemarks() {
+        return managerRemarks;
     }
 
-    public void setLate(boolean late) {
-        isLate = late;
+    public void setManagerRemarks(String managerRemarks) {
+        this.managerRemarks = managerRemarks;
     }
 
-    public boolean isOvertime() {
-        return isOvertime;
+    public String getHrRemarks() {
+        return hrRemarks;
     }
 
-    public void setOvertime(boolean overtime) {
-        isOvertime = overtime;
+    public void setHrRemarks(String hrRemarks) {
+        this.hrRemarks = hrRemarks;
     }
 
     public Instant getCreatedAt() {
@@ -140,13 +134,5 @@ public class Attendance {
 
     public void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public boolean isWfh() {
-        return isWfh;
-    }
-
-    public void setWfh(boolean wfh) {
-        isWfh = wfh;
     }
 }

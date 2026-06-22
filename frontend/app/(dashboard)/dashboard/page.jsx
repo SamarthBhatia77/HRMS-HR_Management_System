@@ -126,7 +126,7 @@ function EmployeeDashboard({ session }) {
   return (
     <section className="space-y-6">
       {/* Hero / greeting banner */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-violet-700 to-indigo-700 p-6 text-white shadow-lg shadow-violet-200">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-violet-700 to-indigo-700 p-6 text-white ">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -bottom-6 right-20 h-28 w-28 rounded-full bg-white/5" />
