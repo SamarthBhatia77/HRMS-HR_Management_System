@@ -114,14 +114,17 @@ public class EmployeeController {
             String phoneNumber,
             String profilePic,
             String linkedinUrl,
-            String bio
+            String bio,
+            LocalDate joiningDate,
+            LocalDate birthDate
     ) {}
 
     public record ProfileUpdateRequest(
             String address,
             String phoneNumber,
             String linkedinUrl,
-            String bio
+            String bio,
+            LocalDate birthDate
     ) {}
 
     @GetMapping("/profile")
@@ -140,7 +143,9 @@ public class EmployeeController {
                 employee.getPhoneNumber(),
                 employee.getProfilePic(),
                 employee.getLinkedinUrl(),
-                employee.getBio()
+                employee.getBio(),
+                employee.getJoiningDate(),
+                employee.getBirthDate()
         );
         return ResponseEntity.ok(ApiResponse.ok("Profile fetched successfully", response));
     }
@@ -155,7 +160,8 @@ public class EmployeeController {
                 request.address(),
                 request.phoneNumber(),
                 request.linkedinUrl(),
-                request.bio()
+                request.bio(),
+                request.birthDate()
         );
         ProfileResponseDto response = new ProfileResponseDto(
                 employee.getId(),
@@ -167,7 +173,9 @@ public class EmployeeController {
                 employee.getPhoneNumber(),
                 employee.getProfilePic(),
                 employee.getLinkedinUrl(),
-                employee.getBio()
+                employee.getBio(),
+                employee.getJoiningDate(),
+                employee.getBirthDate()
         );
         return ResponseEntity.ok(ApiResponse.ok("Profile updated successfully", response));
     }
@@ -185,7 +193,9 @@ public class EmployeeController {
                 employee.getPhoneNumber(),
                 employee.getProfilePic(),
                 employee.getLinkedinUrl(),
-                employee.getBio()
+                employee.getBio(),
+                employee.getJoiningDate(),
+                employee.getBirthDate()
         );
         return ResponseEntity.ok(ApiResponse.ok("Employee profile fetched successfully", response));
     }
@@ -203,7 +213,9 @@ public class EmployeeController {
                         emp.getPhoneNumber(),
                         emp.getProfilePic(),
                         emp.getLinkedinUrl(),
-                        emp.getBio()
+                        emp.getBio(),
+                        emp.getJoiningDate(),
+                        emp.getBirthDate()
                 ))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(ApiResponse.ok("Employees searched successfully", list));

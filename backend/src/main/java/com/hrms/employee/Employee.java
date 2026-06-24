@@ -52,6 +52,8 @@ public class Employee {
     @Column(name = "bio")
     private String bio;
 
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
 
     @Column(name = "wfh_quota", nullable = false)
     private int wfhQuota = 5;
@@ -206,6 +208,14 @@ public class Employee {
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public int getWfhQuota() {

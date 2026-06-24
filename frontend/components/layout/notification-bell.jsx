@@ -8,13 +8,47 @@ export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const [toasts, setToasts] = useState([]);
+  const prevIdsRef = useRef(new Set());
+  const isFirstFetch = useRef(true);
+
   const unreadCount = notifications.filter((n) => !n.isRead).length;
+
+  function showToast(message) {
+    const id = Date.now() + Math.random().toString();
+    setToasts((prev) => [...prev, { id, message }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 5000);
+  }
 
   async function fetchNotifications() {
     try {
       const response = await apiFetch("/notifications");
       if (response.success && response.data) {
-        setNotifications(response.data);
+        const data = response.data;
+        
+        if (isFirstFetch.current) {
+          // First fetch of the component mount
+          const hasShownUnread = sessionStorage.getItem("has_shown_unread_toast");
+          if (!hasShownUnread) {
+            const hasUnread = data.some((n) => !n.isRead);
+            if (hasUnread) {
+              showToast("You have unread notifications!");
+            }
+            sessionStorage.setItem("has_shown_unread_toast", "true");
+          }
+          isFirstFetch.current = false;
+        } else {
+          // Subsequent fetches: check if any new notification IDs arrived
+          const newNotifications = data.filter((n) => !prevIdsRef.current.has(n.id));
+          if (newNotifications.length > 0) {
+            showToast("You have received a new notification!");
+          }
+        }
+        
+        prevIdsRef.current = new Set(data.map((n) => n.id));
+        setNotifications(data);
       }
     } catch (err) {
       console.error("Failed to load notifications", err);
@@ -159,6 +193,37 @@ export function NotificationBell() {
           </div>
         </div>
       )}
+
+      {/* Toast notifications container */}
+      <div className="fixed top-4 right-4 z-[9999] flex flex-col gap-3 w-80 pointer-events-none">
+        {toasts.map((t) => (
+          <div
+            key={t.id}
+            className="pointer-events-auto flex items-start gap-3.5 p-4 rounded-2xl bg-white/95 dark:bg-slate-900/95 border border-slate-200/80 dark:border-slate-800 backdrop-blur-md shadow-2xl animate-in slide-in-from-right-5 fade-in duration-300"
+          >
+            <div className="flex-shrink-0 h-9 w-9 rounded-xl bg-violet-100 dark:bg-violet-950/80 text-violet-600 dark:text-violet-400 flex items-center justify-center text-lg shadow-sm">
+              🔔
+            </div>
+            <div className="flex-1 min-w-0 pt-0.5">
+              <p className="text-[10px] font-extrabold uppercase tracking-wider text-violet-600 dark:text-violet-400 mb-1">
+                Workspace Alert
+              </p>
+              <p className="text-xs font-semibold text-slate-850 dark:text-slate-100 leading-snug">
+                {t.message}
+              </p>
+            </div>
+            <button
+              onClick={() => setToasts((prev) => prev.filter((toast) => toast.id !== t.id))}
+              className="text-slate-400 hover:text-slate-650 dark:text-slate-500 dark:hover:text-slate-300 transition-colors pt-0.5"
+              aria-label="Close alert"
+            >
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

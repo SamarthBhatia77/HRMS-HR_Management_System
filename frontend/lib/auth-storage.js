@@ -63,6 +63,8 @@ export function updateSession(updates) {
 export function logoutUser() {
   if (typeof window !== "undefined") {
     localStorage.removeItem(SESSION_KEY);
+    sessionStorage.removeItem("wished_birthday_anniversary");
+    sessionStorage.removeItem("has_shown_unread_toast");
   }
 }
 

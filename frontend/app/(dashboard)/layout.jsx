@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getSession } from "@/lib/auth-storage";
 import { AppShell } from "@/components/layout/app-shell";
 import { EmployeeShell } from "@/components/layout/employee-shell";
+import { CelebrationModal } from "@/components/layout/celebration-modal";
 
 export default function DashboardLayout({ children }) {
   const [role, setRole] = useState(null);
@@ -27,9 +28,19 @@ export default function DashboardLayout({ children }) {
   }
 
   if (role === "HR_ADMIN") {
-    return <AppShell>{children}</AppShell>;
+    return (
+      <AppShell>
+        <CelebrationModal />
+        {children}
+      </AppShell>
+    );
   }
 
   // EMPLOYEE or MANAGER
-  return <EmployeeShell>{children}</EmployeeShell>;
+  return (
+    <EmployeeShell>
+      <CelebrationModal />
+      {children}
+    </EmployeeShell>
+  );
 }

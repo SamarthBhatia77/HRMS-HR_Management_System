@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -155,12 +156,13 @@ public class EmployeeService {
     }
 
     @Transactional
-    public Employee updateProfile(String email, String address, String phoneNumber, String linkedinUrl, String bio) {
+    public Employee updateProfile(String email, String address, String phoneNumber, String linkedinUrl, String bio, LocalDate birthDate) {
         Employee employee = getEmployeeByEmail(email);
         employee.setAddress(address);
         employee.setPhoneNumber(phoneNumber);
         employee.setLinkedinUrl(linkedinUrl);
         employee.setBio(bio);
+        employee.setBirthDate(birthDate);
         return employeeRepository.save(employee);
     }
 

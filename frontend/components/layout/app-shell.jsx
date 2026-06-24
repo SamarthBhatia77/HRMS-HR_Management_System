@@ -91,9 +91,9 @@ function NavLink({ label, href, icon, pathname }) {
     <a
       href={href}
       className={[
-        "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group",
+        "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group relative",
         active
-          ? "bg-brand-700 text-white shadow-sm"
+          ? "bg-brand-700 text-white shadow-md dark:shadow-brand-700/30 dark:ring-1 dark:ring-brand-500/30 border border-transparent dark:border-brand-500/20"
           : "text-slate-600 dark:text-slate-400 hover:bg-brand-50 dark:hover:bg-brand-950/40 hover:text-brand-700 dark:hover:text-brand-300",
       ].join(" ")}
     >
@@ -118,7 +118,7 @@ export function AppShell({ children }) {
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 transition-colors duration-200">
       {/* Sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 flex-col md:flex transition-colors duration-200">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/95 dark:backdrop-blur-md flex-col md:flex transition-colors duration-200">
         {/* Logo */}
         <div className="flex items-center gap-3 px-5 h-16 border-b border-slate-100 dark:border-slate-800/30 flex-shrink-0">
           <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-brand-700 to-brand-500 flex items-center justify-center shadow-sm">
