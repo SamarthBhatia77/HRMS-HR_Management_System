@@ -31,20 +31,20 @@ export function DarkModeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all duration-200 focus:outline-none"
+      className="group p-2 text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 rounded-xl transition-all duration-200 focus:outline-none"
       aria-label="Toggle dark mode"
       id="dark-mode-toggle-btn"
     >
-      <div className="relative w-5 h-5 flex items-center justify-center">
+      <div className="relative w-7 h-7 flex items-center justify-center">
         {/* Sun Icon */}
         <svg
           className={[
-            "w-5 h-5 absolute top-0 left-0 transition-all duration-300 transform",
+            "w-7 h-7 absolute top-0 left-0 transition-all duration-500 ease-in-out transform text-yellow-500 group-hover:text-yellow-600 dark:text-yellow-400 dark:group-hover:text-yellow-300",
             isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100",
           ].join(" ")}
           fill="none"
           viewBox="0 0 24 24"
-          strokeWidth={2}
+          strokeWidth={1.5}
           stroke="currentColor"
         >
           <path
@@ -57,18 +57,18 @@ export function DarkModeToggle() {
         {/* Moon Icon */}
         <svg
           className={[
-            "w-5 h-5 absolute top-0 left-0 transition-all duration-300 transform",
+            "w-7 h-7 absolute top-0 left-0 transition-all duration-500 ease-in-out transform text-slate-500 group-hover:text-slate-800 dark:text-slate-400 dark:group-hover:text-slate-100",
             isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0",
           ].join(" ")}
           fill="none"
           viewBox="0 0 24 24"
-          strokeWidth={2}
+          strokeWidth={1.5}
           stroke="currentColor"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M21.75 6.009c-.13-.01-.26-.02-.39-.02a9.75 9.75 0 109.03 9.03c.01-.13.02-.26.02-.39a9.75 9.75 0 01-8.66-8.62z"
+            d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"
           />
         </svg>
       </div>

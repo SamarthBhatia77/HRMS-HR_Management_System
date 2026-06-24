@@ -56,7 +56,9 @@ public class AttendanceController {
             double longitude,
             double radiusMeters,
             String address,
-            String officeIp
+            String officeIp,
+            String detectedIp,
+            boolean wifiMatched
     ) {}
 
     @PostMapping("/mark")
@@ -102,22 +104,24 @@ public class AttendanceController {
     }
 
     @GetMapping("/location")
-    public ResponseEntity<ApiResponse<OfficeLocationResponseDto>> getOfficeLocation(Principal principal) {
+    public ResponseEntity<ApiResponse<OfficeLocationResponseDto>> getOfficeLocation(Principal principal, HttpServletRequest request) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         OfficeLocation location = attendanceService.getOfficeLocation();
-        return ResponseEntity.ok(ApiResponse.ok("Office location fetched.", mapToOfficeDto(location)));
+        String clientIp = getClientIp(request);
+        return ResponseEntity.ok(ApiResponse.ok("Office location fetched.", mapToOfficeDto(location, clientIp)));
     }
 
     @PutMapping("/location")
     @PreAuthorize("hasRole('HR_ADMIN')")
-    public ResponseEntity<ApiResponse<OfficeLocationResponseDto>> updateOfficeLocation(Principal principal, @RequestBody UpdateLocationDto dto) {
+    public ResponseEntity<ApiResponse<OfficeLocationResponseDto>> updateOfficeLocation(Principal principal, HttpServletRequest request, @RequestBody UpdateLocationDto dto) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
         OfficeLocation location = attendanceService.updateOfficeLocation(dto.latitude(), dto.longitude(), dto.radiusMeters(), dto.address(), dto.officeIp());
-        return ResponseEntity.ok(ApiResponse.ok("Office location updated successfully.", mapToOfficeDto(location)));
+        String clientIp = getClientIp(request);
+        return ResponseEntity.ok(ApiResponse.ok("Office location updated successfully.", mapToOfficeDto(location, clientIp)));
     }
 
     private AttendanceResponseDto mapToDto(Attendance a) {
@@ -137,15 +141,18 @@ public class AttendanceController {
         );
     }
 
-    private OfficeLocationResponseDto mapToOfficeDto(OfficeLocation o) {
+    private OfficeLocationResponseDto mapToOfficeDto(OfficeLocation o, String clientIp) {
         if (o == null) return null;
+        boolean wifiMatched = o.getOfficeIp() != null && o.getOfficeIp().equalsIgnoreCase(clientIp);
         return new OfficeLocationResponseDto(
                 o.getId(),
                 o.getLatitude(),
                 o.getLongitude(),
                 o.getRadiusMeters(),
                 o.getAddress(),
-                o.getOfficeIp()
+                o.getOfficeIp(),
+                clientIp,
+                wifiMatched
         );
     }
 

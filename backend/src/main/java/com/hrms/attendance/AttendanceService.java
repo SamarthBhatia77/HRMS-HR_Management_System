@@ -62,19 +62,15 @@ public class AttendanceService {
 
         OfficeLocation office = getOfficeLocation();
 
-        // Verify client IP address if configured
+        // Verify client IP address (mandatory)
         String officeIp = office.getOfficeIp();
-        if (officeIp != null && !officeIp.trim().isEmpty()) {
-            String resolvedClientIp = clientIp != null ? clientIp.trim() : "";
-            if (!officeIp.equalsIgnoreCase(resolvedClientIp)) {
-                throw new IllegalArgumentException("IP verification failed! Your request IP (" + resolvedClientIp + ") does not match the configured office IP (" + officeIp + ").");
-            }
+        if (officeIp == null || officeIp.trim().isEmpty()) {
+            throw new IllegalArgumentException("IP verification failed! Office WiFi IP is not configured in the system.");
         }
 
-        double distance = calculateDistance(userLat, userLng, office.getLatitude(), office.getLongitude());
-
-        if (distance > office.getRadiusMeters()) {
-            throw new IllegalArgumentException("Out of range! You are " + Math.round(distance) + "m away from the office.");
+        String resolvedClientIp = clientIp != null ? clientIp.trim() : "";
+        if (!officeIp.equalsIgnoreCase(resolvedClientIp)) {
+            throw new IllegalArgumentException("IP verification failed! Your request IP (" + resolvedClientIp + ") does not match the configured office IP (" + officeIp + ").");
         }
 
         LocalDate today = LocalDate.now();

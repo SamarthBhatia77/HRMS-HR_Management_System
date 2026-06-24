@@ -63,9 +63,6 @@ export default function AttendancePage() {
   const [todayRecord, setTodayRecord] = useState(null);
   const [history, setHistory] = useState([]);
   const [officeLocation, setOfficeLocation] = useState(null);
-  const [userCoords, setUserCoords] = useState(null);
-  const [distance, setDistance] = useState(null);
-  const [locationError, setLocationError] = useState("");
   const [marking, setMarking] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" }); // type: success, error
 
@@ -87,25 +84,13 @@ export default function AttendancePage() {
   }, []);
 
   useEffect(() => {
-    if (officeLocation && userCoords) {
-      const dist = calculateDistance(
-        userCoords.latitude,
-        userCoords.longitude,
-        officeLocation.latitude,
-        officeLocation.longitude
-      );
-      setDistance(dist);
-    }
-  }, [officeLocation, userCoords]);
-
-  useEffect(() => {
     fetchHistory();
   }, [selectedMonth, selectedYear]);
 
   async function fetchInitialData() {
     setLoading(true);
     try {
-      // 1. Fetch Office Location
+      // 1. Fetch Office Location (returns detectedIp and wifiMatched)
       const locRes = await apiFetch("/attendance/location");
       if (locRes.success && locRes.data) {
         setOfficeLocation(locRes.data);
@@ -122,36 +107,12 @@ export default function AttendancePage() {
         setTodayRecord(todayRes.data);
       }
 
-      // 3. Request User Geolocation
-      requestUserLocation();
-
-      // 4. Fetch History
+      // 3. Fetch History
       await fetchHistory();
     } catch (err) {
       console.error("Failed to load initial data", err);
     } finally {
       setLoading(false);
-    }
-  }
-
-  function requestUserLocation() {
-    if (typeof window !== "undefined" && navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setUserCoords({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-          });
-          setLocationError("");
-        },
-        (error) => {
-          console.error("Geolocation error", error);
-          setLocationError("Please enable browser location access to scan and mark attendance.");
-        },
-        { enableHighAccuracy: true, timeout: 15000 }
-      );
-    } else {
-      setLocationError("Geolocation is not supported by this browser.");
     }
   }
 
@@ -167,20 +128,14 @@ export default function AttendancePage() {
   }
 
   async function handleMarkAttendance() {
-    if (!userCoords) {
-      setMessage({ text: "Unable to detect your location. Please check settings.", type: "error" });
-      requestUserLocation();
-      return;
-    }
-
     setMarking(true);
     setMessage({ text: "", type: "" });
     try {
       const res = await apiFetch("/attendance/mark", {
         method: "POST",
         body: JSON.stringify({
-          latitude: userCoords.latitude,
-          longitude: userCoords.longitude,
+          latitude: 0,
+          longitude: 0,
         }),
       });
 
@@ -192,6 +147,13 @@ export default function AttendancePage() {
             : "Successfully checked in! Have a productive day.",
           type: "success",
         });
+        
+        // Refresh location/WiFi details to update connection status
+        const locRes = await apiFetch("/attendance/location");
+        if (locRes.success && locRes.data) {
+          setOfficeLocation(locRes.data);
+        }
+        
         fetchHistory();
       }
     } catch (err) {
@@ -220,8 +182,7 @@ export default function AttendancePage() {
 
       if (res.success && res.data) {
         setOfficeLocation(res.data);
-        setMessage({ text: "Office geofencing and IP configuration updated successfully.", type: "success" });
-        requestUserLocation(); // trigger range recalculation
+        setMessage({ text: "Office WiFi and location configuration updated successfully.", type: "success" });
       }
     } catch (err) {
       setMessage({ text: err.message || "Failed to update office location.", type: "error" });
@@ -231,45 +192,46 @@ export default function AttendancePage() {
   }
 
   const isHrAdmin = session?.role === "HR_ADMIN";
-  const inRange = officeLocation && distance !== null && distance <= officeLocation.radiusMeters;
+  const wifiMatched = officeLocation?.wifiMatched || false;
   const isCheckIn = !todayRecord;
   const isCheckOut = todayRecord && !todayRecord.checkOut;
   const isCompleted = todayRecord && todayRecord.checkOut;
 
   // Determine button state color, label & disabled status
-  let buttonBg = "bg-slate-300 cursor-not-allowed text-slate-500 border-slate-350 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700";
-  let buttonLabel = "Scan Range";
-  let statusMessage = "Checking your location range...";
+  let buttonBg = "bg-slate-300 cursor-not-allowed text-slate-500 border-slate-350 dark:bg-slate-800 dark:text-slate-550 dark:border-slate-705";
+  let buttonLabel = "Wrong WiFi";
+  let statusMessage = "Checking your connection...";
   let pulseAnimation = "";
 
-  if (locationError) {
-    statusMessage = locationError;
-    buttonLabel = "Out of range";
-  } else if (officeLocation && distance !== null) {
+  if (officeLocation) {
     if (isCheckIn) {
-      if (inRange) {
+      if (wifiMatched) {
         buttonBg = "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-200 border-emerald-450 hover:scale-105 active:scale-95 cursor-pointer dark:shadow-none";
         buttonLabel = "Check In";
-        statusMessage = "In range. Please mark your attendance.";
+        statusMessage = "Connected to Office WiFi. Please mark your attendance.";
         pulseAnimation = "animate-ping absolute inset-0 rounded-full bg-emerald-500 opacity-20 scale-110";
       } else {
-        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed dark:from-rose-950/20 dark:to-rose-900/10 dark:text-rose-400 dark:border-rose-900/50";
-        buttonLabel = "Out of range";
-        statusMessage = `Out of range! You are ${Math.round(distance)}m away from the office.`;
+        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed dark:from-rose-950/20 dark:to-rose-900/10 dark:text-rose-450 dark:border-rose-900/50";
+        buttonLabel = "Wrong WiFi";
+        statusMessage = officeLocation.officeIp 
+          ? `Connection restricted! Target IP: ${officeLocation.officeIp}, Detected IP: ${officeLocation.detectedIp || "N/A"}.`
+          : "Office WiFi IP is not configured in the system.";
       }
     } else if (isCheckOut) {
-      if (inRange) {
+      if (wifiMatched) {
         buttonBg = "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-200 border-amber-450 hover:scale-105 active:scale-95 cursor-pointer dark:shadow-none";
         buttonLabel = "Check Out";
-        statusMessage = "In range. Tap to check out.";
+        statusMessage = "Connected to Office WiFi. Tap to check out.";
         pulseAnimation = "animate-ping absolute inset-0 rounded-full bg-amber-500 opacity-20 scale-110";
       } else {
-        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed dark:from-rose-950/20 dark:to-rose-900/10 dark:text-rose-400 dark:border-rose-900/50";
-        buttonLabel = "Out of range";
-        statusMessage = `Out of range! You are ${Math.round(distance)}m away from the office.`;
+        buttonBg = "bg-gradient-to-br from-rose-50 to-rose-100 text-rose-500 border border-rose-250 cursor-not-allowed dark:from-rose-950/20 dark:to-rose-900/10 dark:text-rose-455 dark:border-rose-900/50";
+        buttonLabel = "Wrong WiFi";
+        statusMessage = officeLocation.officeIp 
+          ? `Connection restricted! Target IP: ${officeLocation.officeIp}, Detected IP: ${officeLocation.detectedIp || "N/A"}.`
+          : "Office WiFi IP is not configured in the system.";
       }
     } else if (isCompleted) {
-      buttonBg = "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-950 dark:border-slate-800 dark:text-slate-605";
+      buttonBg = "bg-slate-100 border border-slate-200 text-slate-400 cursor-not-allowed dark:bg-slate-950 dark:border-slate-800 dark:text-slate-600";
       buttonLabel = "Completed";
       statusMessage = "You have checked out for the day.";
     }
@@ -318,13 +280,13 @@ export default function AttendancePage() {
         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex flex-col items-center justify-center text-center space-y-5 dark:bg-slate-900 dark:border-slate-800">
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Time Clock</h2>
 
-          {/* Range Status Bar */}
+          {/* WiFi Status Bar */}
           <div className={`px-4 py-1.5 rounded-full text-xs font-semibold border ${
-            inRange 
+            wifiMatched 
               ? "bg-emerald-50 text-emerald-700 border-emerald-100 dark:bg-emerald-950/30 dark:text-emerald-400 dark:border-emerald-900/40" 
-              : "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-450 dark:border-rose-900/40"
+              : "bg-rose-50 text-rose-700 border-rose-100 dark:bg-rose-950/30 dark:text-rose-400 dark:border-rose-900/40"
           }`}>
-            {inRange ? "● In Geofence Range" : "○ Out of Range"}
+            {wifiMatched ? "● Connected to Office WiFi" : "○ Disconnected from Office WiFi"}
           </div>
 
           {/* Circular Button Wrapper */}
@@ -332,7 +294,7 @@ export default function AttendancePage() {
             {pulseAnimation && <span className={pulseAnimation} />}
             <button
               id="attendance-clock-btn"
-              disabled={marking || isCompleted || (!inRange && !locationError)}
+              disabled={marking || isCompleted || !wifiMatched}
               onClick={handleMarkAttendance}
               className={`${buttonBg} relative h-40 w-40 rounded-full flex flex-col items-center justify-center transition-all duration-300 select-none font-bold border-4 text-center focus:outline-none`}
             >
@@ -341,7 +303,7 @@ export default function AttendancePage() {
               ) : (
                 <>
                   <span className="text-xl uppercase tracking-wide">{buttonLabel}</span>
-                  {!isCompleted && inRange && (
+                  {!isCompleted && wifiMatched && (
                     <span className="text-[10px] mt-1 opacity-70 font-normal">Tap to confirm</span>
                   )}
                   {isCompleted && (
@@ -352,15 +314,15 @@ export default function AttendancePage() {
             </button>
           </div>
 
-          <p className={`text-xs font-semibold ${inRange ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}>
+          <p className={`text-xs font-semibold ${wifiMatched ? "text-emerald-600 dark:text-emerald-400" : "text-rose-500 dark:text-rose-400"}`}>
             {statusMessage}
           </p>
 
           <button 
-            onClick={requestUserLocation} 
+            onClick={fetchInitialData} 
             className="text-indigo-600 hover:text-indigo-800 dark:text-indigo-400 dark:hover:text-indigo-300 text-xs font-bold flex items-center gap-1 mt-1 hover:underline"
           >
-            Refresh Location
+            Refresh Connection
           </button>
         </div>
 
@@ -377,7 +339,7 @@ export default function AttendancePage() {
                   {todayRecord ? fmtTime(todayRecord.checkIn) : "—"}
                 </span>
                 {todayRecord && todayRecord.late && (
-                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-100 rounded-full dark:text-rose-405 dark:bg-rose-955/30 dark:border-rose-905/50">
+                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-rose-700 bg-rose-50 border border-rose-100 rounded-full dark:text-rose-400 dark:bg-rose-950/30 dark:border-rose-900/50">
                     Late Comer
                   </span>
                 )}
@@ -389,31 +351,26 @@ export default function AttendancePage() {
                   {todayRecord ? fmtTime(todayRecord.checkOut) : "—"}
                 </span>
                 {todayRecord && todayRecord.overtime && (
-                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-full dark:text-violet-405 dark:bg-violet-955/30 dark:border-violet-905/50">
+                  <span className="inline-flex self-start mt-2 px-2 py-0.5 text-[10px] font-semibold text-violet-700 bg-violet-50 border border-violet-100 rounded-full dark:text-violet-400 dark:bg-violet-950/30 dark:border-violet-900/50">
                     Overtime
                   </span>
                 )}
               </div>
             </div>
 
-            {/* Geofence target details */}
+            {/* Network target details */}
             <div className="bg-indigo-50/50 border border-indigo-100 rounded-xl p-4 space-y-2 dark:bg-indigo-950/20 dark:border-indigo-900/50">
-              <span className="text-xs font-bold text-indigo-800 dark:text-indigo-400 uppercase tracking-wide">Target Worksite Geofence</span>
+              <span className="text-xs font-bold text-indigo-800 dark:text-indigo-400 uppercase tracking-wide">Authorized Office WiFi Network</span>
               <div className="grid gap-2 sm:grid-cols-2 text-xs text-indigo-700 dark:text-indigo-300 mt-1">
                 <div>
-                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Address:</span> {officeLocation?.address || "N/A"}
+                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Office IP WiFi Address:</span> {officeLocation?.officeIp ? <code className="bg-indigo-100/50 px-1.5 py-0.5 rounded font-mono text-[11px] dark:bg-indigo-950/50">{officeLocation.officeIp}</code> : <span className="text-slate-400 italic">Not Configured</span>}
                 </div>
                 <div>
-                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Radius Limit:</span> {officeLocation?.radiusMeters}m
+                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Detected Connection IP:</span> {officeLocation?.detectedIp ? <code className="bg-indigo-100/50 px-1.5 py-0.5 rounded font-mono text-[11px] dark:bg-indigo-950/50">{officeLocation.detectedIp}</code> : <span className="text-slate-400 italic">Unknown</span>}
                 </div>
                 <div className="sm:col-span-2">
-                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Office IP Check:</span> {officeLocation?.officeIp ? <code className="bg-indigo-100/50 px-1.5 py-0.5 rounded font-mono text-[11px] dark:bg-indigo-950/50">{officeLocation.officeIp}</code> : <span className="text-slate-400 italic">None (Bypassed)</span>}
+                  <span className="font-semibold text-indigo-800 dark:text-indigo-400">Registered Office Location:</span> {officeLocation?.address || "N/A"}
                 </div>
-                {userCoords && (
-                  <div className="sm:col-span-2 text-slate-500 dark:text-slate-400 mt-1 border-t border-indigo-100/40 dark:border-indigo-900/30 pt-2">
-                    <span className="font-semibold text-indigo-700 dark:text-indigo-400">Detected Coordinates:</span> Lat: {userCoords.latitude.toFixed(6)}, Lng: {userCoords.longitude.toFixed(6)}
-                  </div>
-                )}
               </div>
             </div>
           </div>

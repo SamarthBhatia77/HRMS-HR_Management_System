@@ -7,6 +7,8 @@ import com.hrms.user.AppUser;
 import com.hrms.user.UserRepository;
 import com.hrms.payroll.SalaryStructure;
 import com.hrms.payroll.SalaryStructureRepository;
+import com.hrms.attendance.OfficeLocation;
+import com.hrms.attendance.OfficeLocationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -26,15 +28,18 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final EmployeeRepository employeeRepository;
     private final SalaryStructureRepository salaryStructureRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OfficeLocationRepository officeLocationRepository;
 
     public DatabaseSeeder(UserRepository userRepository,
                           EmployeeRepository employeeRepository,
                           SalaryStructureRepository salaryStructureRepository,
-                          PasswordEncoder passwordEncoder) {
+                          PasswordEncoder passwordEncoder,
+                          OfficeLocationRepository officeLocationRepository) {
         this.userRepository = userRepository;
         this.employeeRepository = employeeRepository;
         this.salaryStructureRepository = salaryStructureRepository;
         this.passwordEncoder = passwordEncoder;
+        this.officeLocationRepository = officeLocationRepository;
     }
 
     @Override
@@ -197,6 +202,15 @@ public class DatabaseSeeder implements CommandLineRunner {
             SalaryStructure ss = new SalaryStructure(emp2Employee, new BigDecimal("70000.00"), new BigDecimal("28000.00"), new BigDecimal("4000.00"), new BigDecimal("5000.00"));
             salaryStructureRepository.save(ss);
         }
+
+        // Update default office IP to testing IP (192.168.1.8) on system startup if it matches default value
+        officeLocationRepository.findAll().stream().findFirst().ifPresent(location -> {
+            if ("192.168.10.109".equals(location.getOfficeIp())) {
+                log.info("Updating default office IP from 192.168.10.109 to testing IP: 192.168.1.8");
+                location.setOfficeIp("192.168.1.8");
+                officeLocationRepository.save(location);
+            }
+        });
 
         log.info("Database seeding / validation complete. You can login with {} / {}", adminEmail, adminPassword);
     }
