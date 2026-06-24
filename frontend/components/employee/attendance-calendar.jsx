@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { apiFetch } from "@/lib/api";
 
 const MONTH_NAMES = [
   "January", "February", "March", "April", "May", "June",
@@ -8,40 +9,13 @@ const MONTH_NAMES = [
 ];
 const DAY_LABELS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 
-/** Stable deterministic hash of a date string → number */
-function hashDate(dateStr) {
-  let h = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    h = Math.imul(31, h) + dateStr.charCodeAt(i);
-    h |= 0;
-  }
-  return Math.abs(h);
-}
-
-/**
- * Returns "present" | "absent" | "weekend" | "future" | "today"
- * Mock: ~82 % of past weekdays = present, rest = absent.
- */
-function getMockStatus(date) {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-
-  const dow = d.getDay();
-  if (dow === 0 || dow === 6) return "weekend";
-  if (d.getTime() === now.getTime()) return "today";
-  if (d > now) return "future";
-
-  const dateStr = d.toISOString().slice(0, 10);
-  return hashDate(dateStr) % 6 === 0 ? "absent" : "present";
-}
-
 export function AttendanceCalendar() {
   const now = new Date();
   const [viewDate, setViewDate] = useState(
     new Date(now.getFullYear(), now.getMonth(), 1)
   );
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const year = viewDate.getFullYear();
   const month = viewDate.getMonth();
@@ -59,6 +33,23 @@ export function AttendanceCalendar() {
     }
   }
 
+  useEffect(() => {
+    async function fetchHistory() {
+      setLoading(true);
+      try {
+        const res = await apiFetch(`/attendance/history?month=${month + 1}&year=${year}`);
+        if (res.success && res.data) {
+          setAttendanceData(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load attendance history", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchHistory();
+  }, [viewDate]);
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const firstDow = new Date(year, month, 1).getDay();
 
@@ -68,17 +59,55 @@ export function AttendanceCalendar() {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
 
-  // Compute present/absent counts for the banner
+  // Map of LocalDate string (YYYY-MM-DD) to check-in record
+  const recordsMap = new Map();
+  attendanceData.forEach((rec) => {
+    recordsMap.set(rec.date, rec);
+  });
+
+  function getDayStatus(dayNumber) {
+    const d = new Date(year, month, dayNumber);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    d.setHours(0, 0, 0, 0);
+
+    const dow = d.getDay();
+    const isWeekend = dow === 0 || dow === 6;
+
+    // Check if we have a checked-in record on this date
+    const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(dayNumber).padStart(2, "0")}`;
+    const hasRecord = recordsMap.has(dateStr);
+
+    if (d.getTime() === today.getTime()) {
+      return hasRecord ? "present" : "today";
+    }
+
+    if (d > today) {
+      return "future";
+    }
+
+    if (hasRecord) {
+      return "present";
+    }
+
+    if (isWeekend) {
+      return "weekend";
+    }
+
+    return "absent";
+  }
+
+  // Compute present/absent counts for the banner dynamically
   let presentCount = 0;
   let absentCount = 0;
   for (let d = 1; d <= daysInMonth; d++) {
-    const s = getMockStatus(new Date(year, month, d));
-    if (s === "present") presentCount++;
-    if (s === "absent") absentCount++;
+    const status = getDayStatus(d);
+    if (status === "present") presentCount++;
+    if (status === "absent") absentCount++;
   }
 
   return (
-    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-5 select-none">
+    <div className="rounded-2xl border border-slate-100/90 dark:border-slate-800/80 bg-white dark:bg-slate-900 shadow-sm p-5 select-none transition-colors duration-200">
       {/* ── Header ─────────────────────────────────────────────── */}
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
@@ -117,42 +146,49 @@ export function AttendanceCalendar() {
       </div>
 
       {/* ── Calendar grid ──────────────────────────────────────── */}
-      <div className="grid grid-cols-7 gap-y-0.5">
-        {cells.map((day, idx) => {
-          if (!day) return <div key={`e${idx}`} />;
+      {loading ? (
+        <div className="flex h-44 items-center justify-center text-xs text-slate-400 dark:text-slate-500">
+          <div className="h-4 w-4 border-2 border-violet-650 border-t-transparent rounded-full animate-spin mr-2" />
+          Updating...
+        </div>
+      ) : (
+        <div className="grid grid-cols-7 gap-y-0.5">
+          {cells.map((day, idx) => {
+            if (!day) return <div key={`e${idx}`} />;
 
-          const status = getMockStatus(new Date(year, month, day));
-          const isToday = status === "today";
+            const status = getDayStatus(day);
+            const isToday = status === "today";
 
-          return (
-            <div key={day} className="flex flex-col items-center py-0.5 group">
-              <div
-                className={[
-                  "w-7 h-7 flex items-center justify-center rounded-full text-[11px] font-medium transition-all",
-                  isToday
-                    ? "bg-violet-600 text-white font-bold shadow-sm shadow-violet-300 dark:shadow-none"
-                    : status === "weekend"
-                    ? "text-slate-300 dark:text-slate-600"
-                    : status === "future"
-                    ? "text-slate-400 dark:text-slate-500"
-                    : "text-slate-700 dark:text-slate-300 group-hover:bg-slate-100 dark:group-hover:bg-slate-800",
-                ].join(" ")}
-              >
-                {day}
+            return (
+              <div key={day} className="flex flex-col items-center py-0.5 group">
+                <div
+                  className={[
+                    "w-7 h-7 flex items-center justify-center rounded-full text-[11px] font-medium transition-all",
+                    isToday
+                      ? "bg-violet-600 text-white font-bold shadow-sm shadow-violet-300 dark:shadow-none"
+                      : status === "weekend"
+                      ? "text-slate-300 dark:text-slate-600"
+                      : status === "future"
+                      ? "text-slate-400 dark:text-slate-500"
+                      : "text-slate-700 dark:text-slate-300 group-hover:bg-slate-100 dark:group-hover:bg-slate-800",
+                  ].join(" ")}
+                >
+                  {day}
+                </div>
+                {/* Status dot */}
+                <div className="h-1.5 mt-0.5">
+                  {status === "present" && (
+                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                  )}
+                  {status === "absent" && (
+                    <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
+                  )}
+                </div>
               </div>
-              {/* Status dot */}
-              <div className="h-1.5 mt-0.5">
-                {status === "present" && (
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                )}
-                {status === "absent" && (
-                  <div className="h-1.5 w-1.5 rounded-full bg-red-400" />
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* ── Stats + Legend ─────────────────────────────────────── */}
       <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
@@ -163,10 +199,10 @@ export function AttendanceCalendar() {
           </div>
           <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             <div className="h-2 w-2 rounded-full bg-red-400" />
-            <span className="font-medium text-red-600 dark:text-red-400">{absentCount}</span> Absent
+            <span className="font-medium text-red-650 dark:text-red-400">{absentCount}</span> Absent
           </div>
         </div>
-        <div className="text-[10px] text-slate-400 dark:text-slate-500 italic">Mock data</div>
+        <div className="text-[10px] text-slate-400 dark:text-slate-500 italic">Live records</div>
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ import com.hrms.payroll.SalaryStructure;
 import com.hrms.payroll.SalaryStructureRepository;
 import com.hrms.attendance.OfficeLocation;
 import com.hrms.attendance.OfficeLocationRepository;
+import com.hrms.attendance.Attendance;
+import com.hrms.attendance.AttendanceRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Component
@@ -29,17 +32,20 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final SalaryStructureRepository salaryStructureRepository;
     private final PasswordEncoder passwordEncoder;
     private final OfficeLocationRepository officeLocationRepository;
+    private final AttendanceRepository attendanceRepository;
 
     public DatabaseSeeder(UserRepository userRepository,
                           EmployeeRepository employeeRepository,
                           SalaryStructureRepository salaryStructureRepository,
                           PasswordEncoder passwordEncoder,
-                          OfficeLocationRepository officeLocationRepository) {
+                          OfficeLocationRepository officeLocationRepository,
+                          AttendanceRepository attendanceRepository) {
         this.userRepository = userRepository;
         this.employeeRepository = employeeRepository;
         this.salaryStructureRepository = salaryStructureRepository;
         this.passwordEncoder = passwordEncoder;
         this.officeLocationRepository = officeLocationRepository;
+        this.attendanceRepository = attendanceRepository;
     }
 
     @Override
@@ -202,6 +208,71 @@ public class DatabaseSeeder implements CommandLineRunner {
             SalaryStructure ss = new SalaryStructure(emp2Employee, new BigDecimal("70000.00"), new BigDecimal("28000.00"), new BigDecimal("4000.00"), new BigDecimal("5000.00"));
             salaryStructureRepository.save(ss);
         }
+
+        // --- Seed Dummy Employee (dummyemployee@gmail.com) ---
+        String dummyEmail = "dummyemployee@gmail.com";
+        Optional<AppUser> dummyUserOpt = userRepository.findByEmail(dummyEmail);
+        AppUser dummyUser;
+        if (dummyUserOpt.isEmpty()) {
+            log.info("Dummy employee user not found. Seeding dummyemployee@gmail.com...");
+            dummyUser = new AppUser(
+                    dummyEmail,
+                    passwordEncoder.encode("password123"),
+                    Role.EMPLOYEE,
+                    "ACTIVE"
+            );
+            dummyUser.setId("d0c1b2c3-d4e5-f6a7-b8c9-d0e1f2a3b4c5");
+            dummyUser = userRepository.save(dummyUser);
+        } else {
+            dummyUser = dummyUserOpt.get();
+        }
+
+        Optional<Employee> dummyEmpOpt = employeeRepository.findByUserId(dummyUser.getId());
+        Employee dummyEmployee;
+        if (dummyEmpOpt.isEmpty()) {
+            dummyEmployee = new Employee(
+                    dummyUser,
+                    managerEmployee,
+                    "Dummy Employee",
+                    "Engineering",
+                    "Software Engineer",
+                    LocalDate.of(2026, 3, 24),
+                    "ACTIVE"
+            );
+            dummyEmployee.setId("de1c1b2c-d4e5-f6a7-b8c9-d0e1f2a3b4c5");
+            dummyEmployee = employeeRepository.save(dummyEmployee);
+
+            SalaryStructure ss = new SalaryStructure(dummyEmployee, new BigDecimal("50000.00"), new BigDecimal("20000.00"), new BigDecimal("3000.00"), new BigDecimal("2000.00"));
+            salaryStructureRepository.save(ss);
+        } else {
+            dummyEmployee = dummyEmpOpt.get();
+        }
+
+        // Seed dummy attendance records for June 2026 (today is 24/06/2026) so that attendance percent is > 50%.
+        int seededDaysCount = 0;
+        for (int d = 1; d <= 24; d++) {
+            LocalDate date = LocalDate.of(2026, 6, d);
+            int dayOfWeek = date.getDayOfWeek().getValue(); // 1 = Monday, 7 = Sunday
+            if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+                // It is a weekday. Let's make the employee present on first 12 weekdays of June.
+                if (seededDaysCount < 12) {
+                    Optional<Attendance> attOpt = attendanceRepository.findByEmployeeIdAndDate(dummyEmployee.getId(), date);
+                    if (attOpt.isEmpty()) {
+                        Attendance att = new Attendance(
+                                dummyEmployee,
+                                date,
+                                LocalTime.of(9, 0),
+                                LocalTime.of(18, 0),
+                                false,
+                                true
+                        );
+                        attendanceRepository.save(att);
+                    }
+                    seededDaysCount++;
+                }
+            }
+        }
+        log.info("Seeded dummy attendance records for dummyemployee@gmail.com. Total present days in June: {}", seededDaysCount);
 
         // Update default office IP to testing IP (192.168.1.8) on system startup if it matches default value
         officeLocationRepository.findAll().stream().findFirst().ifPresent(location -> {

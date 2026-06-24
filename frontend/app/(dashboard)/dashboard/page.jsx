@@ -1,62 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getSession } from "@/lib/auth-storage";
+import { apiFetch } from "@/lib/api";
 import { AttendanceCalendar } from "@/components/employee/attendance-calendar";
-
-/* ─── HR Admin dashboard (unchanged UI) ─────────────────────── */
-const HR_METRICS = [
-  { label: "Present Today",  value: "42", sub: "↑ 3 from yesterday",  accent: "emerald" },
-  { label: "Pending Leaves", value: "8",  sub: "Needs review",        accent: "amber"   },
-  { label: "Overtime Flags", value: "5",  sub: "This week",           accent: "red"     },
-  { label: "Payroll Ready",  value: "91%",sub: "8 employees pending", accent: "blue"    },
-];
-
-const ACCENT = {
-  emerald: "text-emerald-600 bg-emerald-50",
-  amber:   "text-amber-600 bg-amber-50",
-  red:     "text-red-600 bg-red-50",
-  blue:    "text-blue-600 bg-blue-50",
-};
-
-function HrAdminDashboard() {
-  return (
-    <section className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-slate-950 dark:text-slate-50">Dashboard</h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Attendance, leave, payroll, and HR operations overview.
-        </p>
-      </div>
-      <div className="grid gap-4 md:grid-cols-4">
-        {HR_METRICS.map(({ label, value, sub, accent }) => (
-          <article
-            key={label}
-            className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow"
-          >
-            <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
-            <p className="mt-3 text-3xl font-bold text-slate-950 dark:text-slate-50">{value}</p>
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{sub}</p>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-/* ─── Employee / Manager dashboard ──────────────────────────── */
-const MOCK_STATS = {
-  attendancePct:  94,
-  leavesTotal:    21,
-  leavesUsed:     6,
-  pendingLeaves:  1,
-};
 
 function StatCard({ icon, label, value, sub, colorClass }) {
   return (
-    <article className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow flex items-start justify-between gap-3">
+    <article className="rounded-2xl border border-slate-100 dark:border-slate-800/80 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow flex items-start justify-between gap-3">
       <div>
-        <p className="text-xs font-medium text-slate-500 dark:text-slate-400">{label}</p>
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{label}</p>
         <p className="mt-2 text-3xl font-bold text-slate-900 dark:text-slate-100">{value}</p>
         <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{sub}</p>
       </div>
@@ -80,17 +34,287 @@ function QuickLink({ href, icon, title, sub, borderColor, bgHover, textHover, ic
         <p className={`text-sm font-semibold text-slate-800 dark:text-slate-200 transition-colors ${textHover}`}>{title}</p>
         <p className="text-xs text-slate-500 dark:text-slate-400">{sub}</p>
       </div>
-      <svg className="w-4 h-4 text-slate-300 dark:text-slate-600 ml-auto group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+      <svg className="w-4 h-4 text-slate-300 dark:text-slate-650 ml-auto group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
       </svg>
     </a>
   );
 }
 
+/* ─── HR Admin dashboard (unchanged UI) ─────────────────────── */
+const HR_METRICS = [
+  { label: "Present Today",  value: "42", sub: "↑ 3 from yesterday",  accent: "emerald" },
+  { label: "Pending Leaves", value: "8",  sub: "Needs review",        accent: "amber"   },
+  { label: "Overtime Flags", value: "5",  sub: "This week",           accent: "red"     },
+  { label: "Payroll Ready",  value: "91%",sub: "8 employees pending", accent: "blue"    },
+];
+
+const ACCENT = {
+  emerald: "text-emerald-600 bg-emerald-50",
+  amber:   "text-amber-600 bg-amber-50",
+  red:     "text-red-600 bg-red-55",
+  blue:    "text-blue-600 bg-blue-50",
+};
+
+function HrAdminDashboard() {
+  return (
+    <section className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-slate-950 dark:text-slate-50">Dashboard</h1>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          Attendance, leave, payroll, and HR operations overview.
+        </p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-4">
+        {HR_METRICS.map(({ label, value, sub, accent }) => (
+          <article
+            key={label}
+            className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm hover:shadow-md transition-shadow"
+          >
+            <p className="text-sm text-slate-550 dark:text-slate-400">{label}</p>
+            <p className="mt-3 text-3xl font-bold text-slate-950 dark:text-slate-55">{value}</p>
+            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">{sub}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/* ─── Attendance Trend SVG Chart ────────────────────────── */
+function AttendanceTrendChart({ attendanceHistory }) {
+  const today = new Date();
+  const currentDay = today.getDate();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+
+  const weeks = [
+    { name: "Week 1", start: 1, end: 7 },
+    { name: "Week 2", start: 8, end: 14 },
+    { name: "Week 3", start: 15, end: 21 },
+    { name: "Week 4", start: 22, end: 31 }
+  ];
+
+  const weeklyRates = weeks.map((w) => {
+    // Check if week has started
+    if (currentDay < w.start) {
+      return { name: w.name, rate: null };
+    }
+
+    const actualEnd = Math.min(w.end, currentDay);
+    
+    // Count weekdays in the week range
+    let weekdays = 0;
+    for (let d = w.start; d <= actualEnd; d++) {
+      const dayOfWeek = new Date(year, month, d).getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        weekdays++;
+      }
+    }
+    if (weekdays === 0) weekdays = 1;
+
+    // Count present days in history for this week range
+    const presentInWeek = attendanceHistory.filter((rec) => {
+      const recDay = new Date(rec.date).getDate();
+      return recDay >= w.start && recDay <= actualEnd;
+    }).length;
+
+    const rate = Math.min(100, Math.round((presentInWeek / weekdays) * 100));
+    return { name: w.name, rate };
+  });
+
+  const activeWeeks = weeklyRates.filter(w => w.rate !== null);
+
+  // Generate SVG coordinates
+  // Width: 460, Height: 150. Y-axis values scaled (100% = Y:20, 0% = Y:120)
+  const points = activeWeeks.map((w, idx) => {
+    const x = 50 + idx * 120;
+    const y = 120 - (w.rate * 1.0); // 100% -> 20, 0% -> 120
+    return { x, y, name: w.name, rate: w.rate };
+  });
+
+  const linePath = points.length > 1
+    ? "M " + points.map(p => `${p.x} ${p.y}`).join(" L ")
+    : points.length === 1
+    ? `M 50 ${points[0].y} L 410 ${points[0].y}`
+    : "M 50 120 L 410 120";
+
+  const areaPath = points.length > 1
+    ? `${linePath} L ${points[points.length - 1].x} 130 L ${points[0].x} 130 Z`
+    : points.length === 1
+    ? `M 50 ${points[0].y} L 410 ${points[0].y} L 410 130 L 50 130 Z`
+    : "M 50 130 L 410 130 Z";
+
+  // Compute stats helper
+  const onTimeCount = attendanceHistory.filter(r => !r.late).length;
+  const wfhCount = attendanceHistory.filter(r => r.wfh).length;
+  const onTimePct = attendanceHistory.length > 0 
+    ? Math.round((onTimeCount / attendanceHistory.length) * 100) 
+    : 100;
+
+  return (
+    <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm transition-colors duration-200">
+      <div className="flex flex-col lg:flex-row gap-6">
+        
+        {/* Graph Section */}
+        <div className="flex-grow space-y-3">
+          <div>
+            <h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">Attendance Rate Trend</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-450">Progression chart showing growth and decline of attendance this month</p>
+          </div>
+          
+          <div className="relative w-full h-48 md:h-56 bg-slate-50/50 dark:bg-slate-950/20 rounded-xl p-3 border border-slate-100 dark:border-slate-800/60 overflow-hidden flex items-center justify-center">
+            <svg className="w-full h-full max-w-full max-h-full" viewBox="0 0 460 145" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="chart-area-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10b981" stopOpacity="0.25" />
+                  <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+
+              {/* Grid Lines */}
+              <line x1="50" y1="20" x2="410" y2="20" stroke="#f1f5f9" className="dark:stroke-slate-800/60" strokeWidth="1" strokeDasharray="3" />
+              <line x1="50" y1="70" x2="410" y2="70" stroke="#f1f5f9" className="dark:stroke-slate-800/60" strokeWidth="1" strokeDasharray="3" />
+              <line x1="50" y1="120" x2="410" y2="120" stroke="#f1f5f9" className="dark:stroke-slate-800/60" strokeWidth="1" />
+
+              {/* Chart Filled Area */}
+              {points.length > 0 && (
+                <path d={areaPath} fill="url(#chart-area-grad)" />
+              )}
+
+              {/* Chart Main Trend Line */}
+              {points.length > 0 && (
+                <path d={linePath} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+              )}
+
+              {/* Markers / Coordinates */}
+              {points.map((p, idx) => (
+                <g key={idx}>
+                  <circle cx={p.x} cy={p.y} r="5.5" fill="#10b981" stroke="#ffffff" className="dark:stroke-slate-900" strokeWidth="2" />
+                  <text x={p.x} y={p.y - 9} textAnchor="middle" className="text-[9px] font-bold fill-emerald-600 dark:fill-emerald-400">
+                    {p.rate}%
+                  </text>
+                  <text x={p.x} y="138" textAnchor="middle" className="text-[10px] font-semibold fill-slate-400 dark:fill-slate-500">
+                    {p.name}
+                  </text>
+                </g>
+              ))}
+
+              {/* Y Axis Labels */}
+              <text x="35" y="23" textAnchor="end" className="text-[9px] font-bold fill-slate-400 dark:fill-slate-500">100%</text>
+              <text x="35" y="73" textAnchor="end" className="text-[9px] font-bold fill-slate-400 dark:fill-slate-500">50%</text>
+              <text x="35" y="123" textAnchor="end" className="text-[9px] font-bold fill-slate-400 dark:fill-slate-500">0%</text>
+            </svg>
+          </div>
+        </div>
+
+        {/* Secondary stats block */}
+        <div className="w-full lg:w-60 flex-shrink-0 grid grid-cols-3 lg:grid-cols-1 gap-3 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800/80 pt-4 lg:pt-0 lg:pl-5">
+          <div className="bg-slate-50/70 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/50 rounded-xl p-3 flex flex-col justify-center">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Work From Home</span>
+            <span className="text-xl font-bold text-slate-850 dark:text-slate-200 mt-1">{wfhCount} day{wfhCount !== 1 ? "s" : ""}</span>
+          </div>
+
+          <div className="bg-slate-50/70 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/50 rounded-xl p-3 flex flex-col justify-center">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Late Arrivals</span>
+            <span className={`text-xl font-bold mt-1 ${onTimeCount === attendanceHistory.length ? "text-slate-850 dark:text-slate-200" : "text-amber-600 dark:text-amber-500"}`}>
+              {attendanceHistory.filter(r => r.late).length} day{attendanceHistory.filter(r => r.late).length !== 1 ? "s" : ""}
+            </span>
+          </div>
+
+          <div className="bg-slate-50/70 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/50 rounded-xl p-3 flex flex-col justify-center">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">On-Time Rate</span>
+            <span className="text-xl font-bold text-emerald-600 dark:text-emerald-500 mt-1">{onTimePct}%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Employee / Manager Dashboard ────────────────────────── */
 function EmployeeDashboard({ session }) {
-  const { attendancePct, leavesTotal, leavesUsed, pendingLeaves } = MOCK_STATS;
-  const leavesLeft = leavesTotal - leavesUsed;
+  const [leaves, setLeaves] = useState([]);
+  const [attendance, setAttendance] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   const isManager = session?.role === "MANAGER";
+
+  useEffect(() => {
+    async function loadDashboardData() {
+      setLoading(true);
+      setError("");
+      try {
+        const today = new Date();
+        const [leavesRes, attendanceRes] = await Promise.all([
+          apiFetch("/leaves"),
+          apiFetch(`/attendance/history?month=${today.getMonth() + 1}&year=${today.getFullYear()}`)
+        ]);
+
+        if (leavesRes.success && leavesRes.data) {
+          setLeaves(leavesRes.data);
+        }
+        if (attendanceRes.success && attendanceRes.data) {
+          setAttendance(attendanceRes.data);
+        }
+      } catch (err) {
+        console.error("Error loading dashboard data", err);
+        setError("Could not load latest payroll and attendance records.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboardData();
+  }, []);
+
+  // 1. Calculate Leaves Used (APPROVED) in the current calendar year
+  const currentYear = new Date().getFullYear();
+  const approvedLeaves = leaves.filter(
+    (lr) => lr.status === "APPROVED" && new Date(lr.startDate).getFullYear() === currentYear
+  );
+  let leavesUsed = 0;
+  approvedLeaves.forEach((lr) => {
+    const start = new Date(lr.startDate);
+    const end = new Date(lr.endDate);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+    leavesUsed += diffDays;
+  });
+
+  // 2. Calculate Pending Requests count
+  const pendingLeaves = leaves.filter((lr) => lr.status === "PENDING").length;
+
+  // 3. Leaves remaining (total allowance is standard 21)
+  const leavesTotal = 21;
+  const leavesLeft = Math.max(0, leavesTotal - leavesUsed);
+
+  // 4. Calculate Attendance Rate percentage for this month
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = today.getMonth();
+  
+  let totalWorkingDays = 0;
+  for (let d = 1; d <= today.getDate(); d++) {
+    const dayOfWeek = new Date(year, month, d).getDay();
+    if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+      totalWorkingDays++;
+    }
+  }
+  if (totalWorkingDays === 0) totalWorkingDays = 1;
+  const presentCount = attendance.length;
+  const attendancePct = Math.min(100, Math.round((presentCount / totalWorkingDays) * 100));
+
+  if (loading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-9 w-9 rounded-full border-[3px] border-violet-100 dark:border-violet-900/30 border-t-violet-600 animate-spin" />
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Resolving real metrics...</p>
+        </div>
+      </div>
+    );
+  }
 
   const statCards = [
     {
@@ -111,7 +335,7 @@ function EmployeeDashboard({ session }) {
       icon: "📅",
       label: "Leaves Taken",
       value: String(leavesUsed),
-      sub: "This calendar year",
+      sub: "Approved this year",
       colorClass: "bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400",
     },
     {
@@ -124,7 +348,7 @@ function EmployeeDashboard({ session }) {
   ];
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6 animate-in fade-in duration-300">
       {/* Hero / greeting banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-violet-600 via-violet-700 to-indigo-700 p-6 text-white ">
         {/* Decorative blobs */}
@@ -150,12 +374,21 @@ function EmployeeDashboard({ session }) {
         </div>
       </div>
 
-      {/* Stats row */}
+      {error && (
+        <div className="rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/30 p-4 text-xs font-medium text-red-700 dark:text-red-400">
+          {error}
+        </div>
+      )}
+
+      {/* Stats Cards Row */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {statCards.map((card) => (
           <StatCard key={card.label} {...card} />
         ))}
       </div>
+
+      {/* Custom SVG Trend Graph */}
+      <AttendanceTrendChart attendanceHistory={attendance} />
 
       {/* Calendar + Quick Links */}
       <div className="grid gap-6 lg:grid-cols-5">
@@ -177,7 +410,7 @@ function EmployeeDashboard({ session }) {
             sub={`${leavesLeft} days remaining`}
             borderColor="border-violet-100 hover:border-violet-300 dark:border-violet-900/30 dark:hover:border-violet-850"
             bgHover="hover:bg-violet-50 dark:hover:bg-violet-950/10"
-            textHover="group-hover:text-violet-700 dark:group-hover:text-violet-400"
+            textHover="group-hover:text-violet-705 dark:group-hover:text-violet-400"
             iconBg="bg-violet-100 dark:bg-violet-950/40"
             iconHover="group-hover:bg-violet-200 dark:group-hover:bg-violet-900/30"
             icon={
@@ -205,11 +438,11 @@ function EmployeeDashboard({ session }) {
 
           {/* Leave balance visual */}
           <div className="rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm space-y-3">
-            <p className="text-xs font-semibold text-slate-600 dark:text-slate-400">Leave Balance</p>
+            <p className="text-xs font-semibold text-slate-650 dark:text-slate-400">Leave Balance</p>
             <div>
               <div className="flex items-center justify-between text-xs mb-1.5">
                 <span className="text-slate-500 dark:text-slate-400">{leavesUsed} used of {leavesTotal}</span>
-                <span className="font-semibold text-violet-700 dark:text-violet-400">{leavesLeft} left</span>
+                <span className="font-semibold text-violet-750 dark:text-violet-400">{leavesLeft} left</span>
               </div>
               <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                 <div

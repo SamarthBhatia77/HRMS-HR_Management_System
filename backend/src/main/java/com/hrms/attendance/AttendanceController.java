@@ -126,8 +126,9 @@ public class AttendanceController {
 
     private AttendanceResponseDto mapToDto(Attendance a) {
         if (a == null) return null;
-        String checkInStr = a.getCheckIn() != null ? a.getCheckIn().toString().substring(0, 8) : null;
-        String checkOutStr = a.getCheckOut() != null ? a.getCheckOut().toString().substring(0, 8) : null;
+        java.time.format.DateTimeFormatter timeFormatter = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss");
+        String checkInStr = a.getCheckIn() != null ? a.getCheckIn().format(timeFormatter) : null;
+        String checkOutStr = a.getCheckOut() != null ? a.getCheckOut().format(timeFormatter) : null;
         return new AttendanceResponseDto(
                 a.getId(),
                 a.getEmployee().getId(),

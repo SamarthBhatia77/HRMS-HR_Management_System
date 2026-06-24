@@ -220,6 +220,8 @@ public class LeaveRequestController {
     }
 
     private LeaveRequestDto mapToDto(LeaveRequest lr) {
+        String appliedOn = lr.getCreatedAt() != null ? lr.getCreatedAt().toString().split("T")[0] : 
+                (lr.getStartDate() != null ? lr.getStartDate().toString() : "");
         return new LeaveRequestDto(
                 lr.getId(),
                 lr.getEmployee().getId(),
@@ -229,7 +231,7 @@ public class LeaveRequestController {
                 lr.getEndDate(),
                 lr.getReason(),
                 lr.getStatus(),
-                lr.getCreatedAt().toString().split("T")[0],
+                appliedOn,
                 lr.getManagerRemarks()
         );
     }
